@@ -81,6 +81,12 @@
   .clinic-item .fix b{color:var(--teal)}
   .clinic-item ul{margin:6px 0 0; padding-left:20px} .clinic-item li{margin-bottom:5px; font-size:.92rem}
 
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:flex-start; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+  .stationnav .nav-home{color:var(--sun)!important;border-color:var(--sun)!important;background:rgba(232,147,12,.15);}
   footer{margin-top:36px; padding-top:14px; border-top:3px solid var(--ink); font-size:.9rem; color:#5b6478}
 </style>
 </head>
@@ -93,6 +99,9 @@
     <p>Tap in each student's escape-room file scores. The chart shows where the class is strong and where to reteach — then open the clinic for an instant fix-up.</p>
   </div>
 </header>
+<nav class="stationnav" aria-label="Unit navigation">
+  <a class="nav-home" href="../../index.html">← All lessons</a>
+</nav>
 
 <div class="wrap">
   <div class="tabs">

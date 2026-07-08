@@ -103,6 +103,12 @@
   .tallybox{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:.93rem}
   .tallybox b{color:var(--teal)}
 
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:flex-start; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+  .stationnav .nav-home{color:var(--sun)!important;border-color:var(--sun)!important;background:rgba(232,147,12,.15);}
   footer{margin-top:40px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
   @media print{.reveal{display:block} .hint{display:block}}
 </style>
@@ -117,6 +123,9 @@
     <p>Four evidence files are locked in the vault. Answer the clues to earn each code — then assemble the master code to crack the case.</p>
   </div>
 </header>
+<nav class="stationnav" aria-label="Unit navigation">
+  <a class="nav-home" href="../../index.html">← All lessons</a>
+</nav>
 
 <div class="wrap">
 
