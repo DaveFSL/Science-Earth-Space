@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6 — Models on Trial | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:900px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:30px 20px 34px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:900px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.3rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+
+  section{margin-top:44px; scroll-margin-top:70px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:3px solid var(--ink); padding-bottom:6px; margin-bottom:18px}
+  .sec-head .tag{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.12em;
+    background:var(--ink); color:var(--paper); padding:3px 10px; border-radius:4px; text-transform:uppercase; white-space:nowrap}
+  .sec-head h2{margin:0; font-size:1.3rem}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:16px}
+  .card h3{margin:0 0 12px; font-size:1.08rem}
+  .notice{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0; padding:14px 18px; margin-bottom:16px}
+  .notice p{margin:0 0 8px} .notice p:last-child{margin:0}
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:14px}
+  .evidence .icon{font-size:1.3rem; line-height:1} .evidence p{margin:0; font-size:.93rem} .evidence strong{color:var(--evidence)}
+  textarea{width:100%; min-height:80px; resize:vertical; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; font-family:inherit; font-size:1rem; color:var(--ink); padding:10px 12px}
+  label.q{display:block; font-weight:700; margin:12px 0 6px}
+  label.q .hint{font-weight:400; font-style:italic; color:#5b6478}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem; border:none; border-radius:8px; padding:10px 16px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+
+  /* quiz */
+  .mcq{border-bottom:1px dashed var(--line); padding:12px 0}
+  .mcq:last-of-type{border-bottom:none}
+  .mcq p{margin:0 0 8px; font-weight:700}
+  .opt{display:block; margin:5px 0; padding:8px 12px; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8; cursor:pointer; font-size:.97rem}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-right:10px; accent-color:var(--teal)}
+  .opt.right{background:var(--good-soft); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .mcq .fb{font-size:.93rem; margin:8px 0 0; display:none; background:var(--sun-soft); border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:9px 13px}
+  .mcq .fb::before{content:"\1F527 Fix-up note: "; font-weight:700; color:#9c6206; font-family:"Space Grotesk",sans-serif}
+  .mcq .fb.show{display:block}
+  .scoreline{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.1rem; margin-top:14px; display:none}
+  .scoreline.show{display:block}
+  #fixup-jump{display:none; margin-top:8px} #fixup-jump.show{display:inline-block}
+
+  /* timeline interactive */
+  .tl-wrap{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:640px){.tl-wrap{grid-template-columns:1fr}}
+  .tl-card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; cursor:pointer; transition:transform .15s, box-shadow .15s}
+  .tl-card:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(27,42,74,.12)}
+  .tl-card .yr{font-family:"Space Grotesk",sans-serif; font-weight:700; color:var(--teal); font-size:.85rem}
+  .tl-card h4{margin:4px 0 8px; font-size:1.02rem}
+  .tl-card svg{width:100%; height:140px; background:#0d1530; border-radius:8px; margin-bottom:8px}
+  .tl-card .who{font-size:.85rem; color:#5b6478}
+  .tl-detail{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); font-size:.93rem}
+  .tl-card.open .tl-detail{display:block}
+  .tl-card.open{grid-column:1 / -1}
+  .built{background:var(--teal-soft); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:.9rem}
+  .built b{color:var(--teal)}
+  .tap{font-size:.82rem; color:var(--sun); font-weight:700; font-family:"Space Grotesk",sans-serif; margin:6px 0 0}
+
+  /* evidence sort */
+  .chip-bank{display:flex; flex-wrap:wrap; gap:8px; min-height:54px; padding:12px; background:#f4f1ea; border-radius:10px; margin-bottom:12px}
+  .chip{font-size:.92rem; padding:8px 13px; border-radius:999px; border:1.5px solid var(--ink); background:#fffdf8; cursor:grab; user-select:none}
+  .chip.selected{background:var(--sun-soft); border-color:var(--sun); box-shadow:0 0 0 2px var(--sun)}
+  .chip.right{background:var(--good-soft); border-color:var(--good)} .chip.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .zones{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:560px){.zones{grid-template-columns:1fr}}
+  .zone{border:2px dashed var(--line); border-radius:12px; min-height:120px; padding:10px; background:var(--card)}
+  .zone h4{margin:0 0 8px; font-size:.9rem; text-align:center; color:#5b6478; font-family:"Space Grotesk",sans-serif; text-transform:uppercase; letter-spacing:.06em}
+  .zone.hot{border-color:var(--sun); background:var(--sun-soft)}
+  .zone .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .sort-actions{display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap}
+  #sort-score{font-family:"Space Grotesk",sans-serif; font-weight:700}
+
+  /* evidence file */
+  .efile{display:grid; grid-template-columns:1fr; gap:0}
+  .efile .row{padding:12px 0; border-bottom:1px dashed var(--line)}
+  .efile .row:last-child{border-bottom:none}
+  .efile .lab{font-family:"Space Grotesk",sans-serif; font-weight:700; color:var(--ink)}
+  .efile .lab .pill{font-size:.72rem; background:var(--ink); color:#fff; padding:2px 8px; border-radius:999px; margin-left:6px; letter-spacing:.05em}
+
+  .helpbox{display:none; background:var(--sun-soft); border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:12px 14px; margin-top:10px; font-size:.95rem}
+  .helpbox.show{display:block}
+
+  .check{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input{width:20px; height:20px; margin-top:3px; accent-color:var(--teal)}
+
+  footer{margin-top:50px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.stationnav{position:static}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Mid-Mission · Week 6</p>
+    <h1>Models on Trial</h1>
+    <p>You cracked the science. Now the big twist: for most of history, the smartest people on Earth got it <em>wrong</em>. Why?</p>
+  </div>
+</header>
+
+<nav class="stationnav" aria-label="Jump to a section">
+  <a href="#briefing">🚀 Briefing</a>
+  <a href="#timeline">🔭 Changing Models</a>
+  <a href="#gallery">🗂 Evidence Gallery</a>
+  <a href="#court">⚖ Science Court</a>
+  <a href="#file">📁 Evidence File</a>
+  <a href="#exit">🎫 Exit</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ================= BRIEFING ================= -->
+  <section id="briefing">
+    <div class="sec-head"><span class="tag">Start here</span><h2>Mission Briefing — 5 questions, marks itself</h2></div>
+    <div class="card">
+      <div class="mcq" data-answer="b">
+        <p>1. What really causes the seasons?</p>
+        <label class="opt"><input type="radio" name="q1" value="a">Earth getting closer to the Sun</label>
+        <label class="opt"><input type="radio" name="q1" value="b">Earth's 23.5° tilt as it orbits the Sun</label>
+        <label class="opt"><input type="radio" name="q1" value="c">The Sun getting hotter in summer</label>
+        <p class="fb">It's the <strong>tilt</strong>, not distance — Earth is actually closest to the Sun in January (our summer, the north's winter).</p>
+      </div>
+      <div class="mcq" data-answer="a">
+        <p>2. Why does the Sun appear to move across our sky each day?</p>
+        <label class="opt"><input type="radio" name="q2" value="a">Earth rotates west to east, so the Sun comes into view in the east</label>
+        <label class="opt"><input type="radio" name="q2" value="b">The Sun orbits the Earth once a day</label>
+        <label class="opt"><input type="radio" name="q2" value="c">The Sun physically slides across space</label>
+        <p class="fb">The Sun only <em>appears</em> to move. <strong>We</strong> are turning — west to east — which is the whole point of today's mystery.</p>
+      </div>
+      <div class="mcq" data-answer="c">
+        <p>3. What keeps Earth in orbit around the Sun?</p>
+        <label class="opt"><input type="radio" name="q3" value="a">The Sun's heat</label>
+        <label class="opt"><input type="radio" name="q3" value="b">There's no force — it just floats</label>
+        <label class="opt"><input type="radio" name="q3" value="c">A balance of the Sun's gravity and Earth's motion</label>
+        <p class="fb">The Orbit Lab balance: <strong>gravity</strong> pulls in, <strong>motion</strong> carries forward. Newton explained this — and he's on trial today!</p>
+      </div>
+      <div class="mcq" data-answer="b">
+        <p>4. What is a scientific model?</p>
+        <label class="opt"><input type="radio" name="q4" value="a">A perfect copy of the real thing</label>
+        <label class="opt"><input type="radio" name="q4" value="b">A simplified way to picture and explain something, that can change with new evidence</label>
+        <label class="opt"><input type="radio" name="q4" value="c">A toy with no real use</label>
+        <p class="fb">A model is a <strong>thinking tool</strong> — and a good one changes when better evidence comes along. That's today's big idea.</p>
+      </div>
+      <div class="mcq" data-answer="a">
+        <p>5. A detective's claim is only as good as its…</p>
+        <label class="opt"><input type="radio" name="q5" value="a">evidence</label>
+        <label class="opt"><input type="radio" name="q5" value="b">loudness</label>
+        <label class="opt"><input type="radio" name="q5" value="c">age</label>
+        <p class="fb">Claims need <strong>evidence</strong> — our motto since Week 1, and the rule the whole Science Court runs on.</p>
+      </div>
+      <button class="btn btn-go" id="quiz-check">✔ Check my answers</button>
+      <p class="scoreline" id="quiz-score"></p>
+      <button class="btn btn-quiet" id="fixup-jump">🔧 Take me to my first fix-up note</button>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your score → <strong>OneNote → Science → Week 6</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= CHANGING MODELS TIMELINE ================= -->
+  <section id="timeline">
+    <div class="sec-head"><span class="tag">Explicit teaching</span><h2>How the model changed — tap each clue</h2></div>
+    <div class="notice"><p><strong>Your teacher will walk through these in class.</strong> Each card is one detective in history. Tap a card to see the evidence they found and — importantly — <em>whose work they built on</em>. Come back to these before your assessment: this is Part B gold.</p></div>
+
+    <div class="tl-wrap" id="timeline-cards">
+      <div class="tl-card" data-i="0">
+        <div class="yr">~150 AD</div>
+        <h4>Ptolemy — Earth at the centre</h4>
+        <svg viewBox="0 0 200 120" role="img" aria-label="Earth in the centre with Sun and planets circling it">
+          <circle cx="100" cy="60" r="13" fill="#1565c0"/>
+          <circle cx="100" cy="60" r="34" fill="none" stroke="#3a4666" stroke-dasharray="3 3"/>
+          <circle cx="100" cy="60" r="50" fill="none" stroke="#3a4666" stroke-dasharray="3 3"/>
+          <circle cx="134" cy="60" r="6" fill="#f5a623"/>
+          <circle cx="100" cy="10" r="4" fill="#bdb7aa"/>
+          <text x="60" y="112" fill="#8d97b5" font-size="9" font-family="Arial">EARTH at the centre (geocentric)</text>
+        </svg>
+        <div class="who">Ancient Greek astronomer · Egypt</div>
+        <p class="tap">👆 Tap for the evidence</p>
+        <div class="tl-detail">
+          <p>Ptolemy put <strong>Earth at the centre</strong>, with the Sun, Moon and planets circling it. It actually <em>matched what people saw</em> — the Sun really does appear to cross the sky — and it predicted planet positions well enough to last <strong>over 1,400 years</strong>.</p>
+          <div class="built"><b>Why it made sense:</b> it agreed with everyday observation — just like your Week 2 exit ticket said the Sun "rises". A reasonable model for its evidence.</div>
+        </div>
+      </div>
+
+      <div class="tl-card" data-i="1">
+        <div class="yr">1543</div>
+        <h4>Copernicus — Sun at the centre</h4>
+        <svg viewBox="0 0 200 120" role="img" aria-label="Sun in the centre with Earth and planets orbiting">
+          <circle cx="100" cy="60" r="13" fill="#f5a623"/>
+          <circle cx="100" cy="60" r="32" fill="none" stroke="#3a4666" stroke-dasharray="3 3"/>
+          <circle cx="100" cy="60" r="50" fill="none" stroke="#3a4666" stroke-dasharray="3 3"/>
+          <circle cx="132" cy="60" r="5" fill="#1565c0"/>
+          <circle cx="100" cy="10" r="4" fill="#c1572d"/>
+          <text x="48" y="112" fill="#8d97b5" font-size="9" font-family="Arial">SUN at the centre (heliocentric)</text>
+        </svg>
+        <div class="who">Nicolaus Copernicus · Poland</div>
+        <p class="tap">👆 Tap for the evidence</p>
+        <div class="tl-detail">
+          <p>Copernicus proposed a daring idea: put the <strong>Sun at the centre</strong> and let Earth be just another planet orbiting it. It made the maths of planet motion much simpler.</p>
+          <div class="built"><b>Built on:</b> Ptolemy's careful records — he used the same observations but rearranged them into a simpler model. He didn't start from scratch.</div>
+        </div>
+      </div>
+
+      <div class="tl-card" data-i="2">
+        <div class="yr">1610</div>
+        <h4>Galileo — the telescope proof</h4>
+        <svg viewBox="0 0 200 120" role="img" aria-label="Jupiter with four moons seen through a telescope">
+          <circle cx="80" cy="60" r="16" fill="#d8a25e"/>
+          <circle cx="118" cy="60" r="3" fill="#f5f2ea"/><circle cx="132" cy="60" r="3" fill="#f5f2ea"/>
+          <circle cx="52" cy="60" r="3" fill="#f5f2ea"/><circle cx="40" cy="60" r="3" fill="#f5f2ea"/>
+          <text x="40" y="112" fill="#8d97b5" font-size="9" font-family="Arial">Jupiter's 4 moons — orbiting Jupiter!</text>
+        </svg>
+        <div class="who">Galileo Galilei · Italy</div>
+        <p class="tap">👆 Tap for the evidence</p>
+        <div class="tl-detail">
+          <p>Galileo pointed a new invention — the <strong>telescope</strong> — at the sky and saw <strong>four moons orbiting Jupiter</strong>. That proved not everything circles the Earth. He also saw the <strong>phases of Venus</strong>, which only work if Venus orbits the Sun.</p>
+          <div class="built"><b>Built on:</b> Copernicus's Sun-centred idea (he found the evidence for it) AND the telescope makers of his time, whose lenses he improved.</div>
+        </div>
+      </div>
+
+      <div class="tl-card" data-i="3">
+        <div class="yr">1687</div>
+        <h4>Newton — why they orbit at all</h4>
+        <svg viewBox="0 0 200 120" role="img" aria-label="Sun with a planet curving around it pulled by gravity">
+          <circle cx="60" cy="60" r="14" fill="#f5a623"/>
+          <path d="M60 60 Q140 20 150 60 Q140 100 60 60" fill="none" stroke="#9fd8ff" stroke-width="2"/>
+          <circle cx="150" cy="60" r="6" fill="#1565c0"/>
+          <line x1="150" y1="60" x2="78" y2="60" stroke="#e8930c" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="50" y="112" fill="#8d97b5" font-size="9" font-family="Arial">gravity bends the planet's path into an orbit</text>
+        </svg>
+        <div class="who">Isaac Newton · England</div>
+        <p class="tap">👆 Tap for the evidence</p>
+        <div class="tl-detail">
+          <p>Newton explained the <strong>why</strong>: the same <strong>gravity</strong> that makes an apple fall keeps the planets curving around the Sun. The exact balance you discovered in the Orbit Lab.</p>
+          <div class="built"><b>Built on:</b> Galileo's work on how things move, and Kepler's discovery that orbits are ellipses. Newton said he "stood on the shoulders of giants" — the perfect description of how science works.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <label class="q" for="tlq">In one sentence: what made the model change over time — new <em>opinions</em>, or new <em>evidence</em>? Give one example.</label>
+      <textarea id="tlq" placeholder="The model changed because… For example…"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your answer → <strong>OneNote → Science → Week 6</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= EVIDENCE GALLERY (SORT) ================= -->
+  <section id="gallery">
+    <div class="sec-head"><span class="tag">You do</span><h2>Evidence Gallery — who found what?</h2></div>
+    <div class="card">
+      <p style="margin-top:0">Drag (or tap-then-tap) each piece of evidence to the detective who discovered it. Press <strong>Check</strong>, fix any red cards, and screenshot when it's all green. This sorts out the four contributions you'll need for Part B of your assessment.</p>
+      <div class="chip-bank" id="bank" aria-label="evidence cards to sort"></div>
+      <div class="zones">
+        <div class="zone" data-zone="ptolemy"><h4>Ptolemy</h4><div class="chips"></div></div>
+        <div class="zone" data-zone="copernicus"><h4>Copernicus</h4><div class="chips"></div></div>
+        <div class="zone" data-zone="galileo"><h4>Galileo</h4><div class="chips"></div></div>
+        <div class="zone" data-zone="newton"><h4>Newton</h4><div class="chips"></div></div>
+      </div>
+      <div class="sort-actions">
+        <button class="btn btn-go" id="sort-check">✔ Check my sort</button>
+        <button class="btn btn-quiet" id="sort-reset">↺ Start again</button>
+        <span id="sort-score"></span>
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot the all-green board → <strong>OneNote → Science → Week 6</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= SCIENCE COURT ================= -->
+  <section id="court">
+    <div class="sec-head"><span class="tag">Creative</span><h2>The Science Court — the trial of the geocentric model</h2></div>
+    <div class="card">
+      <h3>The case before the court</h3>
+      <p>For 1,400 years, everyone "knew" the Earth sat still at the centre of everything. Today, that idea is on trial. Your class will argue it out — and the jury must decide using <strong>evidence</strong>, not opinion.</p>
+      <p><strong>Your teacher will give you a role.</strong> Find yours below, read your job, and prepare your strongest evidence.</p>
+    </div>
+
+    <div class="tl-wrap">
+      <div class="card" style="margin:0">
+        <h3>🏛 Team Ptolemy (defence)</h3>
+        <p style="font-size:.95rem">You defend the geocentric model. Your strongest points:</p>
+        <ul style="font-size:.93rem; margin:0; padding-left:20px">
+          <li>It matches what everyone sees — the Sun really does appear to cross the sky.</li>
+          <li>We don't feel the Earth moving, so why believe it does?</li>
+          <li>It predicted the planets well for over 1,400 years.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin:0">
+        <h3>🔭 Team Galileo (prosecution)</h3>
+        <p style="font-size:.95rem">You argue the model is wrong. Your evidence:</p>
+        <ul style="font-size:.93rem; margin:0; padding-left:20px">
+          <li>Jupiter has moons orbiting <em>it</em> — so not everything orbits Earth.</li>
+          <li>Venus has phases that only work if it orbits the Sun.</li>
+          <li>Our own shadow data is explained better by a spinning Earth.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin:0">
+        <h3>⚖ The Jury</h3>
+        <p style="font-size:.95rem">You decide — but only on <strong>evidence</strong>, not on who spoke loudest. For each side, write down the strongest piece of evidence you heard, then give your verdict and your reason.</p>
+      </div>
+      <div class="card" style="margin:0">
+        <h3>👩‍⚖️ The Judge</h3>
+        <p style="font-size:.95rem">You keep order and make sure every claim is backed by evidence. After each point, ask the magic question: <em>"What's your evidence for that?"</em></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>My courtroom notes</h3>
+      <label class="q" for="courtP">Team Ptolemy's strongest evidence was…</label>
+      <textarea id="courtP" style="min-height:55px"></textarea>
+      <label class="q" for="courtG">Team Galileo's strongest evidence was…</label>
+      <textarea id="courtG" style="min-height:55px"></textarea>
+      <label class="q" for="courtV">My verdict — which model does the evidence support, and why?</label>
+      <textarea id="courtV"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your courtroom notes → <strong>OneNote → Science → Week 6</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= EVIDENCE FILE ================= -->
+  <section id="file">
+    <div class="sec-head"><span class="tag">Thinking routine</span><h2>Evidence File: claim · evidence · question</h2></div>
+    <div class="card">
+      <p style="margin-top:0">Detectives keep an Evidence File on every case. Fill in yours for today's big claim.</p>
+      <div class="efile">
+        <div class="row"><span class="lab">Claim <span class="pill">given</span></span>
+          <p style="margin:6px 0 0">The Sun, not the Earth, is at the centre of the solar system.</p></div>
+        <div class="row"><span class="lab">Evidence <span class="pill">your turn</span></span>
+          <label class="q" for="ef-ev" style="margin-top:6px">What evidence from today supports this claim? (Give at least two pieces.)</label>
+          <textarea id="ef-ev" placeholder="1. …  2. …"></textarea></div>
+        <div class="row"><span class="lab">Question <span class="pill">your turn</span></span>
+          <label class="q" for="ef-q" style="margin-top:6px">What question do you still have about the solar system or how we know what we know?</label>
+          <textarea id="ef-q" style="min-height:55px"></textarea></div>
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your Evidence File → <strong>OneNote → Science → Week 6</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= EXIT ================= -->
+  <section id="exit">
+    <div class="sec-head"><span class="tag">Exit ticket</span><h2>Close the case (for today)</h2></div>
+    <div class="card">
+      <label class="q" for="exitw6">Why did the model of the solar system change over hundreds of years? Answer in 2–3 sentences. <span class="hint">Use: model, evidence, built on.</span></label>
+      <textarea id="exitw6"></textarea>
+      <button class="btn btn-quiet" id="helpbtn">🖐 I need help — show me sentence starters</button>
+      <div class="helpbox" id="helpbox">
+        <strong>Build your answer with these:</strong><br>
+        • "A scientific m________ can change when scientists find new e__________."<br>
+        • "For example, Galileo used a telescope to see ____________, which showed the old model was wrong."<br>
+        • "Each scientist b________ on the work of the ones before them — like Newton building on Galileo."
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your explanation → <strong>OneNote → Science → Week 6</strong>. Tip: these scientists are perfect contributions for Part B of your assessment!</p></div>
+    </div>
+  </section>
+
+  <!-- ================= CHECKLIST ================= -->
+  <section>
+    <div class="sec-head"><span class="tag">File the case</span><h2>By the end of today, my OneNote Week 6 page has…</h2></div>
+    <div class="card">
+      <div class="check"><input type="checkbox" id="k1"><label for="k1">💻 my <strong>Mission Briefing score</strong></label></div>
+      <div class="check"><input type="checkbox" id="k2"><label for="k2">💻 my <strong>"what made the model change?"</strong> answer</label></div>
+      <div class="check"><input type="checkbox" id="k3"><label for="k3">💻 my <strong>all-green Evidence Gallery</strong> sort</label></div>
+      <div class="check"><input type="checkbox" id="k4"><label for="k4">💻 my <strong>courtroom notes</strong> and verdict</label></div>
+      <div class="check"><input type="checkbox" id="k5"><label for="k5">💻 my <strong>Evidence File</strong> (claim · evidence · question)</label></div>
+      <div class="check"><input type="checkbox" id="k6"><label for="k6">💻 my <strong>exit ticket</strong> explanation</label></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Next week:</strong> we go back much further — to the world's first astronomers, who were reading the sky tens of thousands of years before Ptolemy.</p>
+    <p>Space Detectives · Year 6 Science · Week 6 study page — original, self-contained, works offline.</p>
+  </footer>
+</div>
+
+<script>
+/* ===== quiz ===== */
+(function(){
+  const jump = document.getElementById('fixup-jump');
+  jump.addEventListener('click', () => { const f = document.querySelector('.mcq .fb.show'); if (f) f.scrollIntoView({behavior:'smooth',block:'center'}); });
+  document.getElementById('quiz-check').addEventListener('click', () => {
+    let score=0, answered=0;
+    document.querySelectorAll('.mcq').forEach(q => {
+      const correct=q.dataset.answer, chosen=q.querySelector('input:checked');
+      q.querySelectorAll('.opt').forEach(o=>o.classList.remove('right','wrong'));
+      q.querySelector('.fb').classList.remove('show');
+      if(!chosen) return; answered++;
+      const lab=chosen.closest('.opt');
+      if(chosen.value===correct){score++; lab.classList.add('right');}
+      else{ lab.classList.add('wrong'); q.querySelectorAll('input').forEach(i=>{if(i.value===correct)i.closest('.opt').classList.add('right');}); q.querySelector('.fb').classList.add('show'); }
+    });
+    const out=document.getElementById('quiz-score'); out.classList.add('show');
+    const wrong=5-score;
+    if(answered<5){ out.textContent='Answer all five questions first! ('+answered+'/5 answered)'; jump.classList.remove('show'); }
+    else if(score===5){ out.textContent='\uD83D\uDE80 Score: 5/5 \u2014 perfect launch!'; jump.classList.remove('show'); }
+    else{ out.textContent='\uD83D\uDE80 Score: '+score+'/5 \u2014 '+wrong+' \uD83D\uDD27 fix-up note'+(wrong>1?'s are':' is')+' waiting in the orange box'+(wrong>1?'es':'')+' under your red answers. Read '+(wrong>1?'them':'it')+', then you\u2019re ready.'; jump.classList.add('show'); }
+  });
+})();
+
+/* ===== timeline cards ===== */
+document.querySelectorAll('.tl-card').forEach(c => c.addEventListener('click', () => c.classList.toggle('open')));
+
+/* ===== evidence sort ===== */
+(function(){
+  const items = [
+    { t:'Put Earth at the centre of everything', a:'ptolemy' },
+    { t:'A model that lasted over 1,400 years', a:'ptolemy' },
+    { t:'Put the Sun at the centre instead', a:'copernicus' },
+    { t:'Made the maths of planet motion simpler', a:'copernicus' },
+    { t:'Saw four moons orbiting Jupiter', a:'galileo' },
+    { t:'Spotted the phases of Venus through a telescope', a:'galileo' },
+    { t:'Explained that gravity keeps planets in orbit', a:'newton' },
+    { t:'Showed orbits follow the same rules as a falling apple', a:'newton' },
+  ];
+  const bank=document.getElementById('bank'); let selected=null;
+  function chip(it){ const c=document.createElement('button'); c.type='button'; c.className='chip'; c.textContent=it.t; c.dataset.a=it.a; c.draggable=true;
+    c.addEventListener('click',()=>{ if(selected===c){c.classList.remove('selected');selected=null;return;} if(selected)selected.classList.remove('selected'); selected=c; c.classList.add('selected'); });
+    c.addEventListener('dragstart',e=>{selected=c; e.dataTransfer.setData('text/plain','');}); return c; }
+  function place(target){ if(!selected)return; selected.classList.remove('selected','right','wrong'); target.appendChild(selected); selected=null; document.getElementById('sort-score').textContent=''; }
+  items.sort(()=>Math.random()-0.5).forEach(it=>bank.appendChild(chip(it)));
+  bank.addEventListener('click',e=>{if(e.target===bank)place(bank);});
+  bank.addEventListener('dragover',e=>e.preventDefault());
+  bank.addEventListener('drop',e=>{e.preventDefault();place(bank);});
+  document.querySelectorAll('.zone').forEach(z=>{ const chips=z.querySelector('.chips');
+    z.addEventListener('click',e=>{if(!e.target.classList.contains('chip'))place(chips);});
+    z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('hot');});
+    z.addEventListener('dragleave',()=>z.classList.remove('hot'));
+    z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('hot');place(chips);}); });
+  document.getElementById('sort-check').addEventListener('click',()=>{ let right=0,placed=0;
+    document.querySelectorAll('.zone').forEach(z=>{ const zone=z.dataset.zone; z.querySelectorAll('.chip').forEach(c=>{ placed++; c.classList.remove('right','wrong'); if(c.dataset.a===zone){c.classList.add('right');right++;} else c.classList.add('wrong'); }); });
+    const s=document.getElementById('sort-score');
+    if(placed<items.length){s.textContent='Place all '+items.length+' cards first ('+placed+' placed).';return;}
+    s.textContent = right===items.length ? '\uD83C\uDFC5 '+right+'/'+items.length+' \u2014 all green! Screenshot time.' : right+'/'+items.length+' \u2014 move the red cards and check again.'; });
+  document.getElementById('sort-reset').addEventListener('click',()=>{ document.querySelectorAll('.zone .chip').forEach(c=>{c.classList.remove('right','wrong');bank.appendChild(c);}); document.getElementById('sort-score').textContent=''; });
+})();
+
+/* ===== help ===== */
+document.getElementById('helpbtn').addEventListener('click',()=>document.getElementById('helpbox').classList.toggle('show'));
+</script>
+</body>
+</html>

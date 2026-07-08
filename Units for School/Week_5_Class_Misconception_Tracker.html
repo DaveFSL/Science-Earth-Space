@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Misconception Tracker | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+    --amber:#e8930c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.55}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:900px; margin:0 auto; padding:0 18px 70px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:22px 18px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:900px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.16em; text-transform:uppercase;
+    font-size:.74rem; color:var(--sun); margin:0 0 6px}
+  h1{font-size:clamp(1.4rem,4vw,2rem); margin:0 0 6px}
+  .hero p{margin:0; color:#d8d4c8; font-size:.95rem}
+
+  .tabs{display:flex; gap:8px; margin:18px 0; flex-wrap:wrap}
+  .tab{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.9rem; border:1.5px solid var(--line);
+    background:var(--card); border-radius:999px; padding:9px 16px; cursor:pointer}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+  .view{display:none} .view.active{display:block}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:16px}
+  .card h2{margin:0 0 6px; font-size:1.15rem}
+  .muted{color:#5b6478; font-size:.92rem}
+
+  /* tally entry */
+  .entry-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:10px 0; border-bottom:1px dashed var(--line)}
+  .entry-row:last-child{border-bottom:none}
+  .entry-row .lbl{flex:1 1 150px; font-weight:700}
+  .stepper{display:flex; align-items:center; gap:8px}
+  .stepper button{width:40px; height:40px; border-radius:10px; border:1.5px solid var(--line); background:#fffdf8;
+    font-size:1.3rem; font-weight:700; cursor:pointer; font-family:"Space Grotesk",sans-serif}
+  .stepper button:active{background:var(--sun-soft)}
+  .stepper .val{min-width:78px; text-align:center; font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.05rem}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.95rem; border:none; border-radius:10px;
+    padding:12px 20px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+  .entered-tag{font-family:"Space Grotesk",sans-serif; font-weight:700; color:var(--good); margin-left:10px}
+
+  /* results bars */
+  .bar-block{margin-bottom:18px}
+  .bar-block h3{margin:0 0 4px; font-size:1.02rem}
+  .bar-block .sub{font-size:.85rem; color:#5b6478; margin:0 0 8px}
+  .bar-track{background:#efeadd; border-radius:8px; height:34px; overflow:hidden; position:relative}
+  .bar-fill{height:100%; display:flex; align-items:center; padding-left:12px; color:#fff; font-weight:700;
+    font-family:"Space Grotesk",sans-serif; font-size:.9rem; transition:width .4s; white-space:nowrap; min-width:42px}
+  .flag{display:inline-block; font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.78rem; padding:2px 9px;
+    border-radius:999px; margin-left:8px}
+  .flag.red{background:var(--bad-soft); color:var(--bad)} .flag.amber{background:var(--sun-soft); color:#9c6206}
+  .flag.green{background:var(--good-soft); color:var(--good)}
+  .summary{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:10px}
+  .summary b{color:var(--teal)}
+
+  /* clinic */
+  .clinic-item{border:1px solid var(--line); border-radius:10px; margin-bottom:12px; overflow:hidden}
+  .clinic-item summary{font-family:"Space Grotesk",sans-serif; font-weight:700; cursor:pointer; padding:14px 16px;
+    background:#f0ece1; list-style-position:inside; font-size:.98rem}
+  .clinic-item[open] summary{background:var(--sun-soft); color:#9c6206}
+  .clinic-item .inner{padding:14px 18px}
+  .clinic-item .wrong{background:var(--bad-soft); border-left:4px solid var(--bad); border-radius:0 8px 8px 0; padding:8px 12px; margin:0 0 10px; font-size:.93rem}
+  .clinic-item .right{background:var(--good-soft); border-left:4px solid var(--good); border-radius:0 8px 8px 0; padding:8px 12px; margin:0 0 10px; font-size:.93rem}
+  .clinic-item .fix{font-size:.93rem; margin:0 0 6px}
+  .clinic-item .fix b{color:var(--teal)}
+  .clinic-item ul{margin:6px 0 0; padding-left:20px} .clinic-item li{margin-bottom:5px; font-size:.92rem}
+
+  footer{margin-top:36px; padding-top:14px; border-top:3px solid var(--ink); font-size:.9rem; color:#5b6478}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Teacher Tools · Week 5</p>
+    <h1>Class Misconception Tracker</h1>
+    <p>Tap in each student's escape-room file scores. The chart shows where the class is strong and where to reteach — then open the clinic for an instant fix-up.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" data-view="enter">➕ Enter scores</button>
+    <button class="tab" data-view="results">📊 Class results</button>
+    <button class="tab" data-view="clinic">🩺 Misconception clinic</button>
+  </div>
+
+  <!-- ============ ENTER ============ -->
+  <div class="view active" id="view-enter">
+    <div class="card">
+      <h2>Enter one student's scores</h2>
+      <p class="muted">Ask each student (or read their Post-it / OneNote) for their score out of 5 on each file. Use + / – or just leave at 5 if they aced it. Press <strong>Add student</strong> after each one. Nothing is saved between sessions, so keep this page open during the lesson.</p>
+      <div id="entry"></div>
+      <div style="margin-top:16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn btn-go" id="add">＋ Add student</button>
+        <button class="btn btn-quiet" id="reset">↺ Reset all</button>
+        <span id="count" class="muted"></span>
+      </div>
+    </div>
+    <div class="card">
+      <p class="muted" style="margin:0">💡 <strong>Faster option:</strong> hands-up count. For each file, ask "who got 5? who got 3–4? who got 0–2?" and tap that many times \u2014 or just enter a rough class set. Even approximate data shows you the misconception pattern.</p>
+    </div>
+  </div>
+
+  <!-- ============ RESULTS ============ -->
+  <div class="view" id="view-results">
+    <div class="card">
+      <h2>Where is the class right now?</h2>
+      <p class="muted" id="res-n">No scores entered yet \u2014 add some on the Enter tab.</p>
+      <div id="bars"></div>
+      <div class="summary" id="summary" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ============ CLINIC ============ -->
+  <div class="view" id="view-clinic">
+    <div class="card">
+      <h2>Misconception clinic \u2014 every foreseeable error, with the fix</h2>
+      <p class="muted">Open the one your data flags red. Each shows the wrong idea, the correct idea, and a quick reteach you can do on the spot. Great for revision too \u2014 students can reopen this any time.</p>
+    </div>
+
+    <details class="clinic-item">
+      <summary>🌞 "The Sun moves around the Earth"</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> the Sun travels across the sky / around the Earth each day.</p>
+        <p class="right"><strong>The correct idea:</strong> the Sun stays put; Earth rotates west-to-east, so the Sun only <em>appears</em> to move.</p>
+        <p class="fix"><b>Reteach in 60 seconds:</b> spin a student slowly on a chair facing a "Sun" (a lamp or a poster). As they turn, the lamp seems to move across <em>their</em> view \u2014 but everyone else can see it's the student turning. "You are the Earth. The Sun didn't move \u2014 you did."</p>
+        <ul>
+          <li>Ask: "What evidence do we have that <em>we're</em> the ones turning?" (the steady, predictable shadow sweep from Week 1).</li>
+          <li>Link: this is exactly the geocentric mistake we'll put on trial in Week 6.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🔥 "Seasons happen because Earth gets closer to the Sun"</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> summer is when Earth is nearer the Sun; winter is when it's further.</p>
+        <p class="right"><strong>The correct idea:</strong> seasons come from the 23.5° <em>tilt</em>. The hemisphere leaning towards the Sun has summer. Distance barely matters.</p>
+        <p class="fix"><b>The clincher:</b> Earth is actually <em>closest</em> to the Sun in early January \u2014 the middle of OUR summer but the middle of the Northern Hemisphere's winter. If distance caused seasons, the whole planet would be hot at once. It isn't.</p>
+        <ul>
+          <li>Reopen the Season Machine and press "tilt OFF": daylight locks at 12 hours, seasons vanish. Tilt is the cause.</li>
+          <li>Ask: "If it's summer here and winter in the UK at the same moment, can distance be the reason?"</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🧭 "Earth's tilt changes through the year"</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> Earth straightens up in summer and tips over more in winter; or the axis swings to point at the Sun.</p>
+        <p class="right"><strong>The correct idea:</strong> the tilt is fixed at 23.5° and the axis always points the same way in space. It's Earth's <em>position</em> on its orbit that changes which hemisphere leans sunward.</p>
+        <p class="fix"><b>Reteach:</b> walk a tilted globe in a big circle around a "Sun", keeping the axis pointing at the same wall the whole time. Stop at four points: same tilt, different hemisphere lit. "The lean never changed \u2014 only where Earth is."</p>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🔁 "Rotate and revolve mean the same thing"</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> the two words are interchangeable; or rotation takes a year / revolution takes a day.</p>
+        <p class="right"><strong>The correct idea:</strong> <em>Rotate</em> = spin on your own axis (Earth: ~24 hours = a day). <em>Revolve</em> = travel around something else (Earth around the Sun: ~365¼ days = a year).</p>
+        <p class="fix"><b>The golden question:</b> "Is it moving around <em>itself</em>, or around <em>something else</em>?" Use the spinning chair (rotate) vs walking a lap of the room (revolve).</p>
+        <ul><li>Quick check: "Which one gives us day and night? Which gives us a year?"</li></ul>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🪐 "Bigger planets are further from the Sun" / planet order muddles</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> size decides distance; or the inner/outer order is jumbled.</p>
+        <p class="right"><strong>The correct idea:</strong> order out from the Sun is Mercury, Venus, Earth, Mars (small, rocky), then Jupiter, Saturn, Uranus, Neptune (giants). Size and distance aren't linked \u2014 tiny Mercury is closest; giant Jupiter is fifth.</p>
+        <p class="fix"><b>Reteach:</b> re-run the pocket solar system halving trick \u2014 the inner four bunch near the Sun. Pair it with a class mnemonic.</p>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🛰 "What keeps Earth in orbit?" (gravity-only or motion-only)</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> gravity alone holds Earth (so why doesn't it fall in?), or there's no gravity in space so motion alone keeps it going.</p>
+        <p class="right"><strong>The correct idea:</strong> it's a <em>balance</em> \u2014 the Sun's gravity pulls inward while Earth's forward motion would fly off in a straight line. Together they bend the path into an orbit.</p>
+        <p class="fix"><b>Reteach:</b> reopen the Orbit Lab. Too slow \u2192 crash (gravity wins). Too fast \u2192 escape (motion wins). Snap gravity off \u2192 straight line. The orbit needs <em>both</em>.</p>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>📏 "A model is wrong if it isn't perfectly accurate"</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> a model that gets something wrong (e.g. planet sizes) is a bad model.</p>
+        <p class="right"><strong>The correct idea:</strong> every model trades off accuracy to make something clearer. A good scientist knows <em>what</em> their model shows well and badly.</p>
+        <p class="fix"><b>Reteach:</b> the pocket solar system shows distance brilliantly but size and motion poorly \u2014 and that's fine, because we used it to study distance. Knowing the limits IS the skill (and the assessment rewards it).</p>
+      </div>
+    </details>
+
+    <details class="clinic-item">
+      <summary>🌗 "The Moon makes its own light" / Moon &amp; Sun confusion (pre-empt for Arc 2)</summary>
+      <div class="inner">
+        <p class="wrong"><strong>The wrong idea:</strong> the Moon glows by itself; or the Moon and Sun are similar objects.</p>
+        <p class="right"><strong>The correct idea:</strong> the Moon reflects sunlight \u2014 it's a rocky world, not a light source. The Sun is a star. (This surfaces in the model-examples and Arc 2.)</p>
+        <p class="fix"><b>Reteach:</b> shine a torch on a ball in a dark room \u2014 the ball "glows" only because it's lit. No torch, no glow.</p>
+      </div>
+    </details>
+  </div>
+
+  <footer>
+    <p>Space Detectives · Year 6 Science · Class Misconception Tracker \u2014 original, self-contained, runs on any device (great on a teacher iPad). Data is session-only and never leaves the device.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const FILES = [
+    { key:'f1', name:'File 1 \u2014 Orbits & Gravity', topic:'gravity, orbits, planet order' },
+    { key:'f2', name:'File 2 \u2014 Day & Night', topic:'rotation, why day/night' },
+    { key:'f3', name:'File 3 \u2014 Seasons & Tilt', topic:'tilt, seasons, daylight' },
+    { key:'f4', name:'File 4 \u2014 Models & Evidence', topic:'models, evidence, error' },
+  ];
+  const records = []; // each: {f1,f2,f3,f4}
+  const cur = { f1:5, f2:5, f3:5, f4:5 };
+
+  // build entry steppers
+  const entry = document.getElementById('entry');
+  FILES.forEach(f => {
+    const row = document.createElement('div'); row.className = 'entry-row';
+    row.innerHTML = '<span class="lbl">'+f.name+'</span>' +
+      '<div class="stepper"><button data-dec="'+f.key+'">\u2212</button>' +
+      '<span class="val" id="val-'+f.key+'">5 / 5</span>' +
+      '<button data-inc="'+f.key+'">＋</button></div>';
+    entry.appendChild(row);
+  });
+  function refresh(){ FILES.forEach(f => document.getElementById('val-'+f.key).textContent = cur[f.key]+' / 5'); }
+  document.querySelectorAll('[data-inc]').forEach(b => b.addEventListener('click', () => { const k=b.dataset.inc; cur[k]=Math.min(5,cur[k]+1); refresh(); }));
+  document.querySelectorAll('[data-dec]').forEach(b => b.addEventListener('click', () => { const k=b.dataset.dec; cur[k]=Math.max(0,cur[k]-1); refresh(); }));
+
+  document.getElementById('add').addEventListener('click', () => {
+    records.push({ ...cur });
+    cur.f1=cur.f2=cur.f3=cur.f4=5; refresh();
+    document.getElementById('count').textContent = records.length + ' student' + (records.length!==1?'s':'') + ' entered';
+    renderResults();
+  });
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!confirm('Clear all entered scores?')) return;
+    records.length = 0; document.getElementById('count').textContent = ''; renderResults();
+  });
+
+  // results
+  const COLORS = { red:'#c0392b', amber:'#e8930c', green:'#1e8e3e' };
+  function renderResults(){
+    const n = records.length;
+    document.getElementById('res-n').textContent = n === 0 ? 'No scores entered yet \u2014 add some on the Enter tab.' :
+      'Based on ' + n + ' student' + (n!==1?'s':'') + '. Average correct per file (out of 5):';
+    const bars = document.getElementById('bars'); bars.innerHTML = '';
+    const summary = document.getElementById('summary');
+    if (n === 0){ summary.style.display='none'; return; }
+    const weak = [];
+    FILES.forEach(f => {
+      const avg = records.reduce((s,r)=>s+r[f.key],0)/n;
+      const pct = avg/5*100;
+      const band = avg >= 4 ? 'green' : avg >= 3 ? 'amber' : 'red';
+      if (band !== 'green') weak.push({ name:f.name, topic:f.topic, band });
+      const blk = document.createElement('div'); blk.className='bar-block';
+      blk.innerHTML = '<h3>'+f.name+
+        ' <span class="flag '+band+'">'+(band==='green'?'strong':band==='amber'?'review':'RETEACH')+'</span></h3>'+
+        '<p class="sub">'+f.topic+'</p>'+
+        '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:'+COLORS[band]+'">'+avg.toFixed(1)+' / 5</div></div>';
+      bars.appendChild(blk);
+    });
+    summary.style.display='block';
+    if (weak.length === 0){
+      summary.innerHTML = '<b>\uD83C\uDF89 Strong across the board.</b> No file is flagging \u2014 a light whole-class recap and straight into the assessment launch.';
+    } else {
+      summary.innerHTML = '<b>Focus your clinic here:</b> ' +
+        weak.map(w => w.name.split('\u2014')[1].trim() + ' ('+(w.band==='red'?'reteach':'review')+')').join(', ') +
+        '. Open the matching cards on the Misconception Clinic tab.';
+    }
+  }
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('view-'+t.dataset.view).classList.add('active');
+    if (t.dataset.view==='results') renderResults();
+  }));
+
+  refresh();
+})();
+</script>
+</body>
+</html>

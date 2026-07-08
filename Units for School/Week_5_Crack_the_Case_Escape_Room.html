@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crack the Case — Mid-Point Escape Room | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+    --lock:#8a6d3b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible, input:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:880px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:#0d1530; color:#f5f2ea; padding:30px 20px 34px; border-bottom:6px solid var(--sun); position:relative; overflow:hidden}
+  .hero{max-width:880px; margin:0 auto; position:relative; z-index:2}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.7rem,4.5vw,2.5rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+  .stars{position:absolute; inset:0; z-index:1}
+  .stars i{position:absolute; background:#cfd8ea; border-radius:50%; opacity:.6}
+
+  /* vault progress */
+  .vault{display:flex; gap:10px; justify-content:center; margin:22px 0 6px; flex-wrap:wrap}
+  .vlock{display:flex; flex-direction:column; align-items:center; gap:4px; font-family:"Space Grotesk",sans-serif;
+    font-weight:700; font-size:.78rem; color:#5b6478}
+  .vlock .ic{width:46px; height:46px; border-radius:10px; background:#e6e0d2; display:flex; align-items:center;
+    justify-content:center; font-size:1.4rem; border:2px solid var(--line)}
+  .vlock.open .ic{background:var(--good-soft); border-color:var(--good)}
+  .vlock.open{color:var(--good)}
+
+  .intro{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0;
+    padding:16px 18px; margin:18px 0}
+  .intro p{margin:0 0 8px} .intro p:last-child{margin:0}
+
+  .filecard{background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:18px; overflow:hidden;
+    box-shadow:0 3px 10px rgba(27,42,74,.08)}
+  .filehead{display:flex; align-items:center; gap:14px; padding:16px 20px; background:#f0ece1; border-bottom:1px solid var(--line)}
+  .filehead .lockic{font-size:1.6rem}
+  .filehead h3{margin:0; font-size:1.1rem}
+  .filehead .status{margin-left:auto; font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.82rem;
+    padding:4px 10px; border-radius:999px; background:#e6e0d2; color:var(--lock)}
+  .filecard.solved .filehead{background:var(--good-soft); border-color:var(--good)}
+  .filecard.solved .status{background:var(--good); color:#fff}
+  .filebody{padding:18px 20px}
+
+  .q{margin-bottom:18px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+  .q:last-of-type{border-bottom:none}
+  .q .qtext{font-weight:700; margin:0 0 4px}
+  .q .digit{font-family:"Space Grotesk",sans-serif; font-size:.8rem; color:var(--teal); font-weight:700; margin:0 0 8px}
+  .opt{display:block; margin:5px 0; padding:9px 13px; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; cursor:pointer; font-size:.97rem}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-right:10px; accent-color:var(--teal)}
+  .opt.right{background:var(--good-soft); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .hint{display:none; margin:8px 0 0; background:var(--sun-soft); border-left:4px solid var(--sun);
+    border-radius:0 8px 8px 0; padding:9px 13px; font-size:.93rem}
+  .hint::before{content:"\1F50D Clue: "; font-weight:700; color:#9c6206; font-family:"Space Grotesk",sans-serif}
+  .hint.show{display:block}
+
+  .codebar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem; border:none; border-radius:8px;
+    padding:10px 16px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+  .codeshow{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.3rem; letter-spacing:.18em; color:var(--good)}
+  .codemsg{font-size:.92rem; color:var(--bad); font-weight:700}
+
+  .reveal{display:none; margin-top:14px; background:#0d1530; color:#f5f2ea; border-radius:10px; padding:16px 18px}
+  .reveal.show{display:block}
+  .reveal h4{margin:0 0 8px; color:var(--sun)}
+  .reveal p{margin:0; font-size:.95rem; color:#dfe3ee}
+  .reveal .clue-word{font-family:"Space Grotesk",sans-serif; font-weight:700; color:#9fd8ff; font-size:1.05rem}
+
+  /* final */
+  #finale{display:none}
+  #finale.show{display:block}
+  .final-card{background:linear-gradient(135deg,#0d1530,#1f3a6e); color:#f5f2ea; border-radius:14px; padding:28px; text-align:center}
+  .final-card h2{color:var(--sun); margin:0 0 12px}
+  .codebox{display:flex; gap:8px; justify-content:center; margin:16px 0; flex-wrap:wrap}
+  .codebox input{width:56px; height:64px; text-align:center; font-family:"Space Grotesk",sans-serif; font-weight:700;
+    font-size:1.8rem; border-radius:10px; border:2px solid var(--line); text-transform:uppercase}
+  .final-msg{font-family:"Space Grotesk",sans-serif; font-weight:700; margin-top:10px; min-height:1.6em}
+
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:16px}
+  .evidence .icon{font-size:1.3rem} .evidence p{margin:0; font-size:.93rem} .evidence strong{color:var(--evidence)}
+
+  .tallybox{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:.93rem}
+  .tallybox b{color:var(--teal)}
+
+  footer{margin-top:40px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.reveal{display:block} .hint{display:block}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Mid-Point Case · Week 5</p>
+    <h1>🔐 Crack the Case</h1>
+    <p>Four evidence files are locked in the vault. Answer the clues to earn each code — then assemble the master code to crack the case.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="vault" id="vault">
+    <div class="vlock" data-v="0"><div class="ic">🔒</div>File 1</div>
+    <div class="vlock" data-v="1"><div class="ic">🔒</div>File 2</div>
+    <div class="vlock" data-v="2"><div class="ic">🔒</div>File 3</div>
+    <div class="vlock" data-v="3"><div class="ic">🔒</div>File 4</div>
+  </div>
+
+  <div class="intro">
+    <p><strong>How it works:</strong> each file has questions. Answer one, press <strong>Check</strong> — if you're right you earn a letter; if not, a 🔍 clue appears to help you fix it and try again. Collect all the letters in a file to reveal its <span class="clue-word" style="color:#9c6206">code word</span>.</p>
+    <p><strong>Detective's honour:</strong> wrong answers aren't failure — they're how you find the gap and close it. Take the clue, rethink, retry.</p>
+  </div>
+
+  <!-- ============ FILE 1: ORBITS & GRAVITY ============ -->
+  <div class="filecard" id="file0" data-target="MOTION">
+    <div class="filehead"><span class="lockic">🔒</span><h3>Evidence File 1 — The Pull of the Sun</h3><span class="status">LOCKED</span></div>
+    <div class="filebody">
+      <div class="q" data-answer="b" data-letter="O">
+        <p class="qtext">What two things must be balanced to keep Earth in orbit?</p>
+        <p class="digit">Earn letter 1 of 5</p>
+        <label class="opt"><input type="radio" name="f0q0" value="a">The Sun's heat and Earth's coldness</label>
+        <label class="opt"><input type="radio" name="f0q0" value="b">The Sun's gravity pulling in, and Earth's motion going forward</label>
+        <label class="opt"><input type="radio" name="f0q0" value="c">Earth's magnetism and the Moon's pull</label>
+        <p class="hint">Remember the Orbit Lab: too slow and gravity wins (crash), too fast and motion wins (escape). It's a balance of <em>gravity</em> and <em>motion</em>.</p>
+      </div>
+      <div class="q" data-answer="c" data-letter="R">
+        <p class="qtext">In the Orbit Lab, you turned gravity OFF while Earth orbited. What happened?</p>
+        <p class="digit">Earn letter 2 of 5</p>
+        <label class="opt"><input type="radio" name="f0q1" value="a">Earth slowly spiralled into the Sun</label>
+        <label class="opt"><input type="radio" name="f0q1" value="b">Earth kept orbiting as normal</label>
+        <label class="opt"><input type="radio" name="f0q1" value="c">Earth shot off in a straight line</label>
+        <p class="hint">With nothing pulling it, an object travels in a straight line. The orbit only curves <em>because</em> gravity bends Earth's path.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="B">
+        <p class="qtext">Which list is in the correct order outwards from the Sun?</p>
+        <p class="digit">Earn letter 3 of 5</p>
+        <label class="opt"><input type="radio" name="f0q2" value="a">Mercury, Venus, Earth, Mars</label>
+        <label class="opt"><input type="radio" name="f0q2" value="b">Venus, Earth, Mercury, Mars</label>
+        <label class="opt"><input type="radio" name="f0q2" value="c">Earth, Mercury, Mars, Venus</label>
+        <p class="hint">Use your mnemonic! My Very Easy Method… Mercury is closest to the Sun.</p>
+      </div>
+      <div class="q" data-answer="b" data-letter="I">
+        <p class="qtext">Why is Mercury much hotter than Neptune?</p>
+        <p class="digit">Earn letter 4 of 5</p>
+        <label class="opt"><input type="radio" name="f0q3" value="a">Mercury is bigger</label>
+        <label class="opt"><input type="radio" name="f0q3" value="b">Mercury is far closer to the Sun</label>
+        <label class="opt"><input type="radio" name="f0q3" value="c">Neptune has no Sun nearby at all</label>
+        <p class="hint">Think about your pocket solar system — the inner planets are crammed near the Sun, the outer ones are a long way out.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="T">
+        <p class="qtext">What is an orbit?</p>
+        <p class="digit">Earn letter 5 of 5</p>
+        <label class="opt"><input type="radio" name="f0q4" value="a">The curved path one object takes around another</label>
+        <label class="opt"><input type="radio" name="f0q4" value="b">The spinning of a planet on its axis</label>
+        <label class="opt"><input type="radio" name="f0q4" value="c">The distance between two planets</label>
+        <p class="hint">Careful — spinning on an axis is <em>rotation</em>. An orbit is the <em>path around</em> something (a revolution).</p>
+      </div>
+      <div class="codebar">
+        <button class="btn btn-go" data-check="0">✔ Check my answers</button>
+        <span class="codemsg" id="msg0"></span>
+        <span class="codeshow" id="code0"></span>
+      </div>
+      <div class="reveal" id="reveal0">
+        <h4>🔓 FILE 1 UNLOCKED</h4>
+        <p>Gravity and motion together keep the planets in orbit. Code word earned: <span class="clue-word">MOTION</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FILE 2: DAY & NIGHT ============ -->
+  <div class="filecard" id="file1" data-target="AXIS">
+    <div class="filehead"><span class="lockic">🔒</span><h3>Evidence File 2 — Why Darkness Falls</h3><span class="status">LOCKED</span></div>
+    <div class="filebody">
+      <div class="q" data-answer="b" data-letter="S">
+        <p class="qtext">What causes day and night?</p>
+        <p class="digit">Earn letter 1 of 5</p>
+        <label class="opt"><input type="radio" name="f1q0" value="a">The Sun travelling around the Earth once a day</label>
+        <label class="opt"><input type="radio" name="f1q0" value="b">Earth rotating on its axis, so different sides face the Sun</label>
+        <label class="opt"><input type="radio" name="f1q0" value="c">The Earth moving closer to and further from the Sun</label>
+        <p class="hint">Big misconception alert! The Sun isn't moving around us — <em>we</em> are spinning. Your Station B globe-and-torch model proved it.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="P">
+        <p class="qtext">How long does Earth take to rotate once?</p>
+        <p class="digit">Earn letter 2 of 5</p>
+        <label class="opt"><input type="radio" name="f1q1" value="a">About 24 hours (one day)</label>
+        <label class="opt"><input type="radio" name="f1q1" value="b">About 365 days (one year)</label>
+        <label class="opt"><input type="radio" name="f1q1" value="c">About one month</label>
+        <p class="hint">One <em>rotation</em> = one day = 24 hours. The 365-day one is the <em>revolution</em> around the Sun. Don't mix them up!</p>
+      </div>
+      <div class="q" data-answer="c" data-letter="I">
+        <p class="qtext">It's the middle of the day here. What's happening on the opposite side of Earth?</p>
+        <p class="digit">Earn letter 3 of 5</p>
+        <label class="opt"><input type="radio" name="f1q2" value="a">It's also midday there</label>
+        <label class="opt"><input type="radio" name="f1q2" value="b">It's sunrise there</label>
+        <label class="opt"><input type="radio" name="f1q2" value="c">It's the middle of the night there</label>
+        <p class="hint">Half of Earth faces the Sun (day), half faces away (night). The far side is in the opposite — midnight.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="N">
+        <p class="qtext">The Sun appears to rise in the east. Why?</p>
+        <p class="digit">Earn letter 4 of 5</p>
+        <label class="opt"><input type="radio" name="f1q3" value="a">Earth rotates from west to east, so the Sun comes into view in the east</label>
+        <label class="opt"><input type="radio" name="f1q3" value="b">The Sun actually moves from east to west across space</label>
+        <label class="opt"><input type="radio" name="f1q3" value="c">The Moon pushes the Sun up each morning</label>
+        <p class="hint">The Sun only <em>appears</em> to move. It's Earth turning west-to-east that brings the Sun into view in the east.</p>
+      </div>
+      <div class="q" data-answer="b" data-letter="S">
+        <p class="qtext">What's the difference between rotate and revolve?</p>
+        <p class="digit">Earn letter 5 of 5</p>
+        <label class="opt"><input type="radio" name="f1q4" value="a">They mean exactly the same thing</label>
+        <label class="opt"><input type="radio" name="f1q4" value="b">Rotate = spin on your own axis; revolve = travel around something else</label>
+        <label class="opt"><input type="radio" name="f1q4" value="c">Rotate = go around the Sun; revolve = spin on the spot</label>
+        <p class="hint">The golden question: moving around <em>itself</em> (rotate) or around <em>something else</em> (revolve)?</p>
+      </div>
+      <div class="codebar">
+        <button class="btn btn-go" data-check="1">✔ Check my answers</button>
+        <span class="codemsg" id="msg1"></span>
+        <span class="codeshow" id="code1"></span>
+      </div>
+      <div class="reveal" id="reveal1">
+        <h4>🔓 FILE 2 UNLOCKED</h4>
+        <p>Day and night come from Earth turning on its axis. Code word earned: <span class="clue-word">AXIS</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FILE 3: SEASONS & TILT ============ -->
+  <div class="filecard" id="file2" data-target="RHYTHM">
+    <div class="filehead"><span class="lockic">🔒</span><h3>Evidence File 3 — The Secret of the Seasons</h3><span class="status">LOCKED</span></div>
+    <div class="filebody">
+      <div class="q" data-answer="c" data-letter="T">
+        <p class="qtext">What really causes the seasons?</p>
+        <p class="digit">Earn letter 1 of 5</p>
+        <label class="opt"><input type="radio" name="f2q0" value="a">Earth getting closer to and further from the Sun</label>
+        <label class="opt"><input type="radio" name="f2q0" value="b">The Sun getting hotter and cooler through the year</label>
+        <label class="opt"><input type="radio" name="f2q0" value="c">Earth's tilt, which leans each hemisphere towards or away from the Sun</label>
+        <p class="hint">The biggest myth in the unit! It's NOT distance — Earth is actually closest to the Sun in January. It's the 23.5° <em>tilt</em>.</p>
+      </div>
+      <div class="q" data-answer="b" data-letter="I">
+        <p class="qtext">When it's summer in Australia, what season is it in the UK?</p>
+        <p class="digit">Earn letter 2 of 5</p>
+        <label class="opt"><input type="radio" name="f2q1" value="a">Also summer</label>
+        <label class="opt"><input type="radio" name="f2q1" value="b">Winter</label>
+        <label class="opt"><input type="radio" name="f2q1" value="c">It's always the same season everywhere</label>
+        <p class="hint">The hemispheres lean opposite ways. When the south leans towards the Sun (our summer), the north leans away (their winter).</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="L">
+        <p class="qtext">As Earth orbits the Sun all year, what does its tilted axis do?</p>
+        <p class="digit">Earn letter 3 of 5</p>
+        <label class="opt"><input type="radio" name="f2q2" value="a">Keeps pointing the same direction in space the whole way round</label>
+        <label class="opt"><input type="radio" name="f2q2" value="b">Slowly straightens up in summer and tilts more in winter</label>
+        <label class="opt"><input type="radio" name="f2q2" value="c">Spins around to always point at the Sun</label>
+        <p class="hint">The Season Machine showed this: the axis never changes direction. It's Earth's <em>position</em> on the orbit that changes which hemisphere leans sunward.</p>
+      </div>
+      <div class="q" data-answer="b" data-letter="T">
+        <p class="qtext">In the Season Machine, you turned the tilt OFF. What happened to daylight hours?</p>
+        <p class="digit">Earn letter 4 of 5</p>
+        <label class="opt"><input type="radio" name="f2q3" value="a">They became 24 hours everywhere</label>
+        <label class="opt"><input type="radio" name="f2q3" value="b">They stayed at about 12 hours all year — no seasons</label>
+        <label class="opt"><input type="radio" name="f2q3" value="c">The Sun disappeared completely</label>
+        <p class="hint">No tilt = every day about 12 hours = no seasons. The tilt is the whole reason seasons exist.</p>
+      </div>
+      <div class="q" data-answer="c" data-letter="S">
+        <p class="qtext">Why do places near the poles (like Helsinki) have huge daylight changes through the year?</p>
+        <p class="digit">Earn letter 5 of 5</p>
+        <label class="opt"><input type="radio" name="f2q4" value="a">They're closer to the Sun</label>
+        <label class="opt"><input type="radio" name="f2q4" value="b">They spin faster than the equator</label>
+        <label class="opt"><input type="radio" name="f2q4" value="c">The tilt affects high latitudes the most — long summer days, short winter days</label>
+        <p class="hint">Your Graph Lab showed it: Helsinki's line swung far more than ours. The closer to the poles, the bigger the daylight swing.</p>
+      </div>
+      <div class="codebar">
+        <button class="btn btn-go" data-check="2">✔ Check my answers</button>
+        <span class="codemsg" id="msg2"></span>
+        <span class="codeshow" id="code2"></span>
+      </div>
+      <div class="reveal" id="reveal2">
+        <h4>🔓 FILE 3 UNLOCKED</h4>
+        <p>The tilt gives the year its rhythm of seasons. Code word earned: <span class="clue-word">RHYTHM</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FILE 4: MODELS & EVIDENCE ============ -->
+  <div class="filecard" id="file3" data-target="SCIENCE">
+    <div class="filehead"><span class="lockic">🔒</span><h3>Evidence File 4 — A Detective's Tools</h3><span class="status">LOCKED</span></div>
+    <div class="filebody">
+      <div class="q" data-answer="b" data-letter="P">
+        <p class="qtext">Your pocket solar system was great at showing distances. What did it get WRONG?</p>
+        <p class="digit">Earn letter 1 of 5</p>
+        <label class="opt"><input type="radio" name="f3q0" value="a">The order of the planets</label>
+        <label class="opt"><input type="radio" name="f3q0" value="b">The sizes of the planets, and that they move</label>
+        <label class="opt"><input type="radio" name="f3q0" value="c">Which planet is closest to the Sun</label>
+        <p class="hint">Every model shows some things well and others badly. The strip nailed distance but couldn't show true size or movement.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="R">
+        <p class="qtext">Your Monday shadow photos got shorter each week. What's that evidence of?</p>
+        <p class="digit">Earn letter 2 of 5</p>
+        <label class="opt"><input type="radio" name="f3q1" value="a">Earth is tilted and revolving — the Sun climbs higher towards the September equinox</label>
+        <label class="opt"><input type="radio" name="f3q1" value="b">The stick is shrinking</label>
+        <label class="opt"><input type="radio" name="f3q1" value="c">The Sun is getting closer to Earth</label>
+        <p class="hint">Same stick, same time, shorter shadow = the Sun is higher in our sky each week. That's the tilt + revolution at work.</p>
+      </div>
+      <div class="q" data-answer="c" data-letter="O">
+        <p class="qtext">Why do scientists use models (like globes, diagrams and simulators)?</p>
+        <p class="digit">Earn letter 3 of 5</p>
+        <label class="opt"><input type="radio" name="f3q2" value="a">Because the real thing is boring</label>
+        <label class="opt"><input type="radio" name="f3q2" value="b">To trick people into believing things</label>
+        <label class="opt"><input type="radio" name="f3q2" value="c">To make huge or invisible things small and clear enough to study</label>
+        <p class="hint">A model is a thinking tool — it makes something too big, too far or too slow into something we can see and test.</p>
+      </div>
+      <div class="q" data-answer="b" data-letter="O">
+        <p class="qtext">A good detective relies on…</p>
+        <p class="digit">Earn letter 4 of 5</p>
+        <label class="opt"><input type="radio" name="f3q3" value="a">Whatever feels true</label>
+        <label class="opt"><input type="radio" name="f3q3" value="b">Evidence — observations and measurements</label>
+        <label class="opt"><input type="radio" name="f3q3" value="c">The loudest opinion in the room</label>
+        <p class="hint">Claims need <em>evidence</em>. That's been our motto since Week 1 — it's also exactly what your assessment rewards.</p>
+      </div>
+      <div class="q" data-answer="a" data-letter="F">
+        <p class="qtext">Why is it useful to compare your shadow data with another group's?</p>
+        <p class="digit">Earn letter 5 of 5</p>
+        <label class="opt"><input type="radio" name="f3q4" value="a">To spot mistakes and find out if results are reliable</label>
+        <label class="opt"><input type="radio" name="f3q4" value="b">To see who has the neatest handwriting</label>
+        <label class="opt"><input type="radio" name="f3q4" value="c">There's no point comparing data</label>
+        <p class="hint">Scientists check each other's results to find errors and build trust in the evidence (that's AC9S6I05 — comparing methods and findings).</p>
+      </div>
+      <div class="codebar">
+        <button class="btn btn-go" data-check="3">✔ Check my answers</button>
+        <span class="codemsg" id="msg3"></span>
+        <span class="codeshow" id="code3"></span>
+      </div>
+      <div class="reveal" id="reveal3">
+        <h4>🔓 FILE 4 UNLOCKED</h4>
+        <p>Evidence and models are the tools of science. Code word earned: <span class="clue-word">SCIENCE</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FINALE ============ -->
+  <div id="finale">
+    <div class="final-card">
+      <h2>🗝 THE MASTER LOCK</h2>
+      <p>All four files are open. Each gave you a code word. Take the FIRST LETTER of each (in order, File 1 → 4) to spell the master code — a certain Red Planet.</p>
+      <p style="font-size:.9rem; color:#9fd8ff">MOTION · AXIS · RHYTHM · SCIENCE</p>
+      <div class="codebox">
+        <input maxlength="1" id="m0" aria-label="letter 1"><input maxlength="1" id="m1" aria-label="letter 2"><input maxlength="1" id="m2" aria-label="letter 3"><input maxlength="1" id="m3" aria-label="letter 4">
+      </div>
+      <button class="btn btn-go" id="master-check">🔓 Crack the case</button>
+      <p class="final-msg" id="final-msg"></p>
+    </div>
+    <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot the cracked case (and note any file that took you extra tries) → <strong>OneNote → Science → Week 5</strong>. The files you found hardest are exactly what to revise before the assessment.</p></div>
+    <div class="tallybox"><b>📊 Class tally:</b> tell your teacher your score for each file (out of 5) so it can go on the class Misconception Tracker — that's how we decide what to revisit together.</div>
+  </div>
+
+  <footer>
+    <p><strong>Case cracked?</strong> Then you're ready for the second half of the mission: who actually figured all this out — and how the assessment lets you tell their story.</p>
+    <p>Space Detectives · Year 6 Science · Crack the Case — original, self-contained, works offline.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // stars
+  const sw = document.getElementById('stars');
+  for (let i=0;i<50;i++){ const s=document.createElement('i'); const sz=Math.random()*2+1;
+    s.style.width=s.style.height=sz+'px'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+    s.style.opacity=Math.random()*0.6+0.2; sw.appendChild(s); }
+
+  const TARGETS = ['MOTION','AXIS','RHYTHM','SCIENCE'];
+  const solved = [false,false,false,false];
+
+  document.querySelectorAll('[data-check]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fi = parseInt(btn.dataset.check,10);
+      const file = document.getElementById('file'+fi);
+      const qs = file.querySelectorAll('.q');
+      let correctCount = 0, answered = 0;
+      qs.forEach(q => {
+        const correct = q.dataset.answer;
+        const chosen = q.querySelector('input:checked');
+        q.querySelectorAll('.opt').forEach(o => o.classList.remove('right','wrong'));
+        q.querySelector('.hint').classList.remove('show');
+        if (!chosen){ return; }
+        answered++;
+        if (chosen.value === correct){ chosen.closest('.opt').classList.add('right'); correctCount++; }
+        else { chosen.closest('.opt').classList.add('wrong'); q.querySelector('.hint').classList.add('show'); }
+      });
+      const msg = document.getElementById('msg'+fi);
+      const code = document.getElementById('code'+fi);
+      file.dataset.score = correctCount;
+      if (answered < qs.length){ msg.textContent = 'Answer all '+qs.length+' clues first.'; code.textContent=''; return; }
+      if (correctCount === qs.length){
+        msg.textContent = ''; code.textContent = '🔓 ' + TARGETS[fi];
+        file.classList.add('solved');
+        file.querySelector('.lockic').textContent = '🔓';
+        file.querySelector('.status').textContent = 'OPEN';
+        document.getElementById('reveal'+fi).classList.add('show');
+        document.querySelector('.vlock[data-v="'+fi+'"]').classList.add('open');
+        document.querySelector('.vlock[data-v="'+fi+'"] .ic').textContent = '🔓';
+        solved[fi] = true;
+        if (solved.every(Boolean)) document.getElementById('finale').classList.add('show');
+      } else {
+        const wrong = qs.length - correctCount;
+        msg.textContent = '🔍 '+wrong+' clue'+(wrong>1?'s':'')+' still wrong — read the clue'+(wrong>1?'s':'')+' and retry.';
+        code.textContent = '';
+      }
+    });
+  });
+
+  // master lock
+  const boxes = [0,1,2,3].map(i => document.getElementById('m'+i));
+  boxes.forEach((b,i) => b.addEventListener('input', () => { b.value = b.value.toUpperCase(); if (b.value && i<3) boxes[i+1].focus(); }));
+  document.getElementById('master-check').addEventListener('click', () => {
+    const guess = boxes.map(b => b.value).join('');
+    const msg = document.getElementById('final-msg');
+    if (guess === 'MARS'){
+      msg.style.color = '#7CFFB0';
+      msg.textContent = '🎉 CASE CRACKED — the code is MARS! Motion, Axis, Rhythm, Science: the four keys to Earth and space. On to the second half of the mission!';
+    } else {
+      msg.style.color = '#ffd479';
+      msg.textContent = 'Not yet — take the first letter of MOTION, AXIS, RHYTHM, SCIENCE in order. Try again, detective.';
+    }
+  });
+})();
+</script>
+</body>
+</html>

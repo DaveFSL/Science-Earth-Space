@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 — The Tilt: seasons and stretching days | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:920px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:30px 20px 34px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:920px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.3rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+
+  section{margin-top:44px; scroll-margin-top:70px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:3px solid var(--ink); padding-bottom:6px; margin-bottom:18px}
+  .sec-head .tag{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.12em;
+    background:var(--ink); color:var(--paper); padding:3px 10px; border-radius:4px; text-transform:uppercase; white-space:nowrap}
+  .sec-head h2{margin:0; font-size:1.3rem}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:16px}
+  .card h3{margin:0 0 12px; font-size:1.08rem}
+  .notice{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0;
+    padding:14px 18px; margin-bottom:16px}
+  .notice p{margin:0 0 8px} .notice p:last-child{margin:0}
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:14px}
+  .evidence .icon{font-size:1.3rem; line-height:1}
+  .evidence p{margin:0; font-size:.93rem}
+  .evidence strong{color:var(--evidence)}
+  textarea{width:100%; min-height:80px; resize:vertical; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; font-family:inherit; font-size:1rem; color:var(--ink); padding:10px 12px}
+  label.q{display:block; font-weight:700; margin:12px 0 6px}
+  label.q .hint{font-weight:400; font-style:italic; color:#5b6478}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem;
+    border:none; border-radius:8px; padding:10px 16px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+  .btn-sun{background:var(--sun); color:#fff} .btn-sun:hover{background:#c97c08}
+
+  /* quiz */
+  .mcq{border-bottom:1px dashed var(--line); padding:12px 0}
+  .mcq:last-of-type{border-bottom:none}
+  .mcq p{margin:0 0 8px; font-weight:700}
+  .opt{display:block; margin:5px 0; padding:8px 12px; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; cursor:pointer; font-size:.97rem}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-right:10px; accent-color:var(--teal)}
+  .opt.right{background:var(--good-soft); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .mcq .fb{font-size:.93rem; margin:8px 0 0; display:none; background:var(--sun-soft);
+    border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:9px 13px}
+  .mcq .fb::before{content:"\1F527 Fix-up note: "; font-weight:700; color:#9c6206; font-family:"Space Grotesk",sans-serif}
+  .mcq .fb.show{display:block}
+  .scoreline{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.1rem; margin-top:14px; display:none}
+  .scoreline.show{display:block}
+  #fixup-jump{display:none; margin-top:8px}
+  #fixup-jump.show{display:inline-block}
+
+  /* big idea cards */
+  .idea-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:640px){.idea-grid{grid-template-columns:1fr}}
+  .idea{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px}
+  .idea h3{display:flex; gap:10px; align-items:center; margin:0 0 10px; font-size:1.02rem}
+  .idea .num{flex:0 0 30px; height:30px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:"Space Grotesk",sans-serif; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.9rem}
+  .idea svg{width:100%; height:170px; background:#0d1530; border-radius:8px; margin-bottom:10px}
+  .idea p{margin:0 0 6px; font-size:.95rem}
+  .idea .keyline{background:var(--teal-soft); border-radius:8px; padding:8px 12px; font-size:.92rem; margin-top:8px}
+  .idea .keyline b{color:var(--teal)}
+  @keyframes orbitkeep{to{transform:rotate(360deg)}}
+  @keyframes counterkeep{to{transform:rotate(-360deg)}}
+
+  /* myth flip */
+  .myth{position:relative; cursor:pointer; min-height:330px}
+  .myth .face{transition:opacity .3s}
+  .myth .back{display:none}
+  .myth.flipped .front{display:none}
+  .myth.flipped .back{display:block}
+  .myth .tap{font-size:.85rem; color:var(--sun); font-weight:700; font-family:"Space Grotesk",sans-serif}
+
+  /* vocab chips */
+  .vocab{display:flex; flex-wrap:wrap; gap:8px}
+  .vchip{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.9rem; padding:9px 15px;
+    border-radius:999px; border:1.5px solid var(--ink); background:#fffdf8; cursor:pointer}
+  .vchip:hover{background:var(--sun-soft)}
+  .vchip.open{background:var(--ink); color:#fff}
+  #vocab-def{margin-top:12px; background:var(--teal-soft); border-radius:8px; padding:12px 14px; font-size:.95rem; min-height:2.5em}
+
+  /* season machine + graph shells */
+  .sim-grid{display:grid; grid-template-columns:1fr 270px; gap:16px; align-items:start}
+  @media (max-width:760px){.sim-grid{grid-template-columns:1fr}}
+  .stage{background:#0d1530; border-radius:12px; overflow:hidden; box-shadow:0 4px 14px rgba(13,21,48,.35)}
+  .stage canvas{display:block; width:100%; height:auto}
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .panel h3{font-size:1.02rem; margin:0 0 10px}
+  .season-btns{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px}
+  .season-btns button{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem;
+    border:1.5px solid var(--line); background:#fffdf8; border-radius:8px; padding:9px 6px; cursor:pointer}
+  .season-btns button:hover{border-color:var(--sun)}
+  .season-btns button.active{background:var(--sun-soft); border-color:var(--sun)}
+  .panel .ctrl label{display:block; font-weight:700; font-size:.9rem; margin-bottom:4px}
+  .panel input[type=range]{width:100%; accent-color:var(--sun)}
+  .readout{font-size:.92rem; color:#5b6478; border-top:1px dashed var(--line); padding-top:10px; margin-top:10px}
+  .readout b{color:var(--ink)}
+  .readout .seasonname{font-family:"Space Grotesk",sans-serif; font-size:1.25rem; color:var(--sun)}
+  #tiltoff.off{background:var(--bad-soft); border-color:var(--bad); color:var(--bad)}
+
+  /* graph */
+  .graph-shell{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px}
+  .graph-shell canvas{display:block; width:100%; height:auto; cursor:crosshair; border-radius:8px}
+  table.data{width:100%; border-collapse:collapse; font-size:.88rem; margin:10px 0}
+  table.data th, table.data td{border:1px solid var(--line); padding:4px 6px; text-align:center}
+  table.data th{background:var(--teal-soft); font-family:"Space Grotesk",sans-serif; font-size:.78rem}
+  .graph-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px}
+  #graph-score{font-family:"Space Grotesk",sans-serif; font-weight:700}
+
+  .why{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:.95rem}
+  .why b{color:var(--teal)}
+  .reveal-btn{margin-top:14px; width:100%; text-align:left; font-size:.9rem}
+  .reveal-btn:disabled{opacity:.55; cursor:not-allowed}
+  .reveal-btn:not(:disabled){background:var(--teal-soft); border:1.5px solid var(--teal); color:var(--teal)}
+  .helpbox{display:none; background:var(--sun-soft); border-left:4px solid var(--sun); border-radius:0 8px 8px 0;
+    padding:12px 14px; margin-top:10px; font-size:.95rem}
+  .helpbox.show{display:block}
+
+  .seal-card{text-align:center; padding:30px 22px}
+  .seal-card .seal{font-size:3rem}
+  #seal-content{display:none; text-align:left}
+  #seal-content.show{display:block}
+
+  .check{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input{width:20px; height:20px; margin-top:3px; accent-color:var(--teal)}
+
+  footer{margin-top:50px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.stationnav{position:static} .stage{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Mission Log · Week 3</p>
+    <h1>The Tilt — seasons and stretching days</h1>
+    <p>The seal comes off the shadow case file today. The answer is a 23.5° lean.</p>
+  </div>
+</header>
+
+<nav class="stationnav" aria-label="Jump to a section">
+  <a href="#briefing">🚀 Briefing</a>
+  <a href="#unseal">🔓 The Seal</a>
+  <a href="#bigideas">💡 Big Ideas</a>
+  <a href="#machine">🌏 Season Machine</a>
+  <a href="#graph">📈 Graph Lab</a>
+  <a href="#plenary">🎫 Exit</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="card" id="homebase" style="margin-top:24px">
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+      <strong style="font-family:'Space Grotesk',sans-serif">🌏 Home base:</strong>
+      <select id="citysel" style="font-family:inherit; font-size:1rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8">
+        <option value="Brisbane|27.47" selected>Brisbane</option>
+        <option value="Sydney|33.87">Sydney</option>
+        <option value="Melbourne|37.81">Melbourne</option>
+        <option value="Adelaide|34.93">Adelaide</option>
+        <option value="Perth|31.95">Perth</option>
+        <option value="Hobart|42.88">Hobart</option>
+        <option value="Canberra|35.28">Canberra</option>
+        <option value="Darwin|12.46">Darwin</option>
+        <option value="Cairns|16.92">Cairns</option>
+        <option value="Auckland|36.85">Auckland</option>
+      </select>
+      <span style="font-size:.85rem; color:#5b6478">Updates the Season Machine and the Graph Lab for your city (Southern Hemisphere).</span>
+    </div>
+  </div>
+
+  <!-- ================= MISSION BRIEFING ================= -->
+  <section id="briefing">
+    <div class="sec-head"><span class="tag">Start here</span><h2>Mission Briefing — 5 questions, marks itself</h2></div>
+    <div class="card">
+      <div class="mcq" data-answer="a">
+        <p>1. How long does Earth take to rotate once on its axis?</p>
+        <label class="opt"><input type="radio" name="q1" value="a">About 24 hours</label>
+        <label class="opt"><input type="radio" name="q1" value="b">About a month</label>
+        <label class="opt"><input type="radio" name="q1" value="c">About a year</label>
+        <p class="fb">One spin = one day = about <strong>24 hours</strong>. The year-long one is the <em>revolution</em> around the Sun.</p>
+      </div>
+      <div class="mcq" data-answer="b">
+        <p>2. Why is it daytime here while it's night-time in the UK?</p>
+        <label class="opt"><input type="radio" name="q2" value="a">The Sun travels around the Earth</label>
+        <label class="opt"><input type="radio" name="q2" value="b">Earth rotates, so different places face the Sun at different times</label>
+        <label class="opt"><input type="radio" name="q2" value="c">Clouds block the UK's sunlight</label>
+        <p class="fb">Your Station B model showed it: the lit half has day, the dark half has night, and the <strong>rotation</strong> swaps them every 24 hours.</p>
+      </div>
+      <div class="mcq" data-answer="b">
+        <p>3. At about what time of day is a stick's shadow shortest?</p>
+        <label class="opt"><input type="radio" name="q3" value="a">Sunrise</label>
+        <label class="opt"><input type="radio" name="q3" value="b">The middle of the day</label>
+        <label class="opt"><input type="radio" name="q3" value="c">Sunset</label>
+        <p class="fb">Your own shadow data showed it: the higher the Sun, the shorter the shadow — and the Sun is highest around the <strong>middle of the day</strong>.</p>
+      </div>
+      <div class="mcq" data-answer="c">
+        <p>4. What keeps Earth travelling in its orbit around the Sun?</p>
+        <label class="opt"><input type="radio" name="q4" value="a">Solar wind pushing it along</label>
+        <label class="opt"><input type="radio" name="q4" value="b">Nothing — space has no forces</label>
+        <label class="opt"><input type="radio" name="q4" value="c">A balance between the Sun's gravity and Earth's own motion</label>
+        <p class="fb">The Orbit Lab balance: <strong>gravity</strong> pulls inwards, <strong>motion</strong> carries forward. Too slow = crash; too fast = escape.</p>
+      </div>
+      <div class="mcq" data-answer="a">
+        <p>5. Which direction does Earth rotate?</p>
+        <label class="opt"><input type="radio" name="q5" value="a">West to east — which is why the Sun appears to rise in the east</label>
+        <label class="opt"><input type="radio" name="q5" value="b">East to west — chasing the Sun</label>
+        <label class="opt"><input type="radio" name="q5" value="c">It changes direction every day</label>
+        <p class="fb">Earth turns <strong>west to east</strong>, so the Sun seems to rise in the east and set in the west — even though the Sun isn't the one moving.</p>
+      </div>
+      <button class="btn btn-go" id="quiz-check">✔ Check my answers</button>
+      <p class="scoreline" id="quiz-score"></p>
+      <button class="btn btn-quiet" id="fixup-jump">🔧 Take me to my first fix-up note</button>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your score → <strong>OneNote → Science → Week 3</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= UNSEAL ================= -->
+  <section id="unseal">
+    <div class="sec-head"><span class="tag">Case file</span><h2>The Shadow Files — unsealing the case 🔓</h2></div>
+    <div class="card seal-card">
+      <div id="seal-closed">
+        <div class="seal">🔒</div>
+        <p><strong>Last week you recorded a hunch:</strong> why does the Monday 1 pm shadow shrink, week after week, with the same stick at the same time?</p>
+        <p style="color:#5b6478">Open your hunch in OneNote and read it out. Then…</p>
+        <button class="btn btn-sun" id="break-seal">🔓 Break the seal</button>
+      </div>
+      <div id="seal-content">
+        <h3>CASE SOLVED: the Sun is climbing.</h3>
+        <p>Every week, the 1 pm Sun sits a little <strong>higher</strong> in our sky — and a higher Sun makes a shorter shadow (your own data from Week 1 proved that across a single day; this is the same rule across a whole term).</p>
+        <p>But <em>why</em> is the Sun climbing? Because Earth is <strong>tilted</strong>, and as it <strong>revolves</strong> around the Sun, our half of the planet — the Southern Hemisphere — is slowly leaning further <strong>towards</strong> the Sun. Winter is ending. By the September equinox, day and night are equal, and the Sun stands much higher at 1 pm than it did in July.</p>
+        <p>So your Monday photo strip isn't just a stack of pictures. It's <strong>evidence that Earth is tilted and on the move</strong> — collected by you, with a stick and some chalk. That's real science.</p>
+        <label class="q" for="hunchcheck">How close was your hunch? What did you get right, and what surprised you?</label>
+        <textarea id="hunchcheck" placeholder="My hunch said… What I now know is…"></textarea>
+        <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot this reflection → <strong>OneNote → Science → Week 3</strong>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BIG IDEAS ================= -->
+  <section id="bigideas">
+    <div class="sec-head"><span class="tag">Big ideas</span><h2>Four ideas that explain every season on Earth</h2></div>
+    <div class="notice"><p><strong>Your teacher will walk through these in class.</strong> Come back to them any time — especially before the assessment. Each card is one idea, one picture, one sentence to remember.</p></div>
+
+    <div class="idea-grid">
+      <div class="idea">
+        <h3><span class="num">1</span>Earth leans</h3>
+        <svg viewBox="0 0 300 170" role="img" aria-label="Earth tilted at 23.5 degrees compared with an upright line">
+          <line x1="150" y1="15" x2="150" y2="155" stroke="#5b6478" stroke-width="2" stroke-dasharray="6 5"/>
+          <g transform="rotate(23.5 150 85)">
+            <line x1="150" y1="20" x2="150" y2="150" stroke="#e8930c" stroke-width="3"/>
+            <circle cx="150" cy="85" r="42" fill="#1565c0"/>
+            <path d="M135 70 q12 -8 22 0 q8 8 16 4 l-4 12 q-14 6 -24 -2 q-8 -8 -14 -4 z" fill="#2f9e44"/>
+            <line x1="108" y1="85" x2="192" y2="85" stroke="#f5f2ea" stroke-width="1.5" stroke-dasharray="4 4"/>
+          </g>
+          <path d="M150 30 A 56 56 0 0 1 168 33" fill="none" stroke="#f5f2ea" stroke-width="1.5"/>
+          <text x="172" y="30" fill="#f5f2ea" font-size="13" font-family="Arial">23.5°</text>
+          <text x="12" y="160" fill="#8d97b5" font-size="11" font-family="Arial">dashed line = straight up · orange line = Earth's axis</text>
+        </svg>
+        <p>Earth doesn't spin standing straight up. Its axis — the invisible line it spins around — leans over at <strong>23.5°</strong>, like a spinning top that's tipped but never falls.</p>
+        <p class="keyline"><b>Remember:</b> Earth is permanently tilted at 23.5°.</p>
+      </div>
+
+      <div class="idea">
+        <h3><span class="num">2</span>The lean never changes direction</h3>
+        <svg viewBox="0 0 300 170" role="img" aria-label="Earth orbiting the Sun with its axis always pointing the same way">
+          <circle cx="150" cy="85" r="17" fill="#f5a623"/>
+          <circle cx="150" cy="85" r="60" fill="none" stroke="#3a4666" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <g>
+            <g transform="translate(210 85)"><g transform="rotate(23.5)"><line x1="0" y1="-16" x2="0" y2="16" stroke="#e8930c" stroke-width="2.5"/><circle r="10" fill="#1565c0"/></g></g>
+            <g transform="translate(90 85)"><g transform="rotate(23.5)"><line x1="0" y1="-16" x2="0" y2="16" stroke="#e8930c" stroke-width="2.5"/><circle r="10" fill="#1565c0"/></g></g>
+            <g transform="translate(150 25)"><g transform="rotate(23.5)"><line x1="0" y1="-16" x2="0" y2="16" stroke="#e8930c" stroke-width="2.5"/><circle r="10" fill="#1565c0"/></g></g>
+            <g transform="translate(150 145)"><g transform="rotate(23.5)"><line x1="0" y1="-16" x2="0" y2="16" stroke="#e8930c" stroke-width="2.5"/><circle r="10" fill="#1565c0"/></g></g>
+          </g>
+          <text x="12" y="160" fill="#8d97b5" font-size="11" font-family="Arial">four stops on the year's orbit — the axis points the same way at every one</text>
+        </svg>
+        <p>As Earth travels its year-long lap of the Sun, the axis keeps pointing at the <strong>same spot in space</strong> the whole way round — it does not wobble towards the Sun and back.</p>
+        <p class="keyline"><b>Remember:</b> the tilt stays fixed — it's Earth's <em>position on the orbit</em> that changes.</p>
+      </div>
+
+      <div class="idea">
+        <h3><span class="num">3</span>Lean towards = summer. Lean away = winter.</h3>
+        <svg viewBox="0 0 300 170" role="img" aria-label="When the Southern Hemisphere leans toward the Sun it is summer there">
+          <circle cx="150" cy="85" r="16" fill="#f5a623"/>
+          <g transform="translate(58 85)"><g transform="rotate(23.5)">
+            <line x1="0" y1="-26" x2="0" y2="26" stroke="#e8930c" stroke-width="2.5"/>
+            <circle r="20" fill="#1565c0"/><path d="M0 -20 a20 20 0 0 0 0 40 z" fill="#0c1733" opacity=".75"/>
+            <text x="4" y="16" fill="#fff" font-size="10" font-family="Arial">S</text><text x="4" y="-8" fill="#cfd8ea" font-size="10" font-family="Arial">N</text>
+          </g></g>
+          <text x="20" y="146" fill="#9fd8ff" font-size="11" font-family="Arial">S leans away:</text>
+          <text x="20" y="160" fill="#9fd8ff" font-size="11" font-family="Arial">winter down south ❄</text>
+          <g transform="translate(242 85)"><g transform="rotate(23.5)">
+            <line x1="0" y1="-26" x2="0" y2="26" stroke="#e8930c" stroke-width="2.5"/>
+            <circle r="20" fill="#1565c0"/><path d="M0 -20 a20 20 0 0 1 0 40 z" fill="#0c1733" opacity=".75"/>
+            <text x="-10" y="16" fill="#fff" font-size="10" font-family="Arial">S</text><text x="-10" y="-8" fill="#cfd8ea" font-size="10" font-family="Arial">N</text>
+          </g></g>
+          <text x="178" y="146" fill="#f5d27a" font-size="11" font-family="Arial">S leans towards the Sun:</text>
+          <text x="178" y="160" fill="#f5d27a" font-size="11" font-family="Arial">summer down south ☀</text>
+        </svg>
+        <p>The hemisphere leaning <strong>towards</strong> the Sun gets sunlight that's more direct <em>and</em> days that are longer — that's its summer. Six months later, the same hemisphere leans <strong>away</strong>: weaker, slanted light and shorter days — winter. The hemispheres always have opposite seasons.</p>
+        <p class="keyline"><b>Remember:</b> towards = summer, away = winter — at the very same moment, on the very same planet.</p>
+      </div>
+
+      <div class="idea myth" id="mythcard" role="button" tabindex="0" aria-label="Tap to bust the myth">
+        <div class="face front">
+          <h3><span class="num">4</span>The big myth — tap to bust it 👆</h3>
+          <svg viewBox="0 0 300 170" role="img" aria-label="question: is summer caused by being closer to the Sun?">
+            <circle cx="60" cy="85" r="22" fill="#f5a623"/>
+            <circle cx="210" cy="85" r="16" fill="#1565c0"/>
+            <text x="240" y="92" fill="#f5f2ea" font-size="34" font-family="Arial">?</text>
+            <text x="20" y="150" fill="#8d97b5" font-size="12" font-family="Arial">"It's hotter in summer because Earth</text>
+            <text x="20" y="164" fill="#8d97b5" font-size="12" font-family="Arial">is closer to the Sun." …True or false?</text>
+          </svg>
+          <p>Most adults get this one wrong. What do you think?</p>
+          <p class="tap">👆 Tap the card for the verdict</p>
+        </div>
+        <div class="face back">
+          <h3><span class="num">4</span>BUSTED: it's the tilt, not the distance ❌</h3>
+          <svg viewBox="0 0 300 170" role="img" aria-label="Earth is closest to the Sun in January">
+            <circle cx="150" cy="85" r="16" fill="#f5a623"/>
+            <ellipse cx="150" cy="85" rx="105" ry="62" fill="none" stroke="#3a4666" stroke-width="1.5" stroke-dasharray="5 5"/>
+            <circle cx="50" cy="85" r="10" fill="#1565c0"/>
+            <text x="14" y="62" fill="#f5d27a" font-size="11" font-family="Arial">JANUARY:</text>
+            <text x="14" y="76" fill="#f5d27a" font-size="11" font-family="Arial">closest!</text>
+            <circle cx="250" cy="85" r="10" fill="#1565c0"/>
+            <text x="236" y="62" fill="#9fd8ff" font-size="11" font-family="Arial">JULY:</text>
+            <text x="236" y="76" fill="#9fd8ff" font-size="11" font-family="Arial">farthest</text>
+          </svg>
+          <p>Earth is actually <strong>closest to the Sun in January</strong> — the middle of <em>our</em> summer, but the middle of <em>winter</em> for the Northern Hemisphere. If distance caused the seasons, the whole planet would have summer at once. It doesn't — because it's the <strong>tilt</strong>.</p>
+          <p class="keyline"><b>Detective's clincher:</b> January = closest AND northern winter. Distance is innocent. The tilt did it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Word bank — tap a word for its meaning</h3>
+      <div class="vocab" id="vocab">
+        <button class="vchip" data-def="The invisible line through the North and South Poles that Earth spins around — tilted at 23.5°.">axis</button>
+        <button class="vchip" data-def="One half of Earth. The equator splits us into the Northern and Southern Hemispheres — we live in the Southern.">hemisphere</button>
+        <button class="vchip" data-def="The imaginary line around Earth's middle, exactly halfway between the poles. Daylight there is close to 12 hours all year.">equator</button>
+        <button class="vchip" data-def="The day of the longest OR shortest daylight. Around 21 June (shortest for us) and 21 December (longest for us).">solstice</button>
+        <button class="vchip" data-def="The two days each year when day and night are equal everywhere — around 20 March and 22 September.">equinox</button>
+        <button class="vchip" data-def="Earth's year-long journey around the Sun — one full lap takes 365¼ days.">revolution</button>
+        <button class="vchip" data-def="To lean over at an angle. Earth's tilt of 23.5° is the reason seasons exist.">tilt</button>
+      </div>
+      <p id="vocab-def"><em>Tap any word above…</em></p>
+    </div>
+  </section>
+
+  <!-- ================= SEASON MACHINE ================= -->
+  <section id="machine">
+    <div class="sec-head"><span class="tag">Interactive</span><h2>The Season Machine 🌏</h2></div>
+    <div class="notice"><p><strong>Drive Earth around its orbit.</strong> Drag the slider through the year, or jump straight to a season. Watch two things: the axis <em>never changes direction</em>, and the daylight hours in your city change anyway. Then press the red button and see what happens to the seasons when the tilt is gone…</p></div>
+
+    <div class="sim-grid">
+      <div class="stage"><canvas id="seasoncv" width="620" height="470" aria-label="Earth orbiting the Sun through the seasons with a fixed tilt"></canvas></div>
+      <div class="panel">
+        <h3>Season controls (Southern Hemisphere)</h3>
+        <div class="season-btns">
+          <button data-day="355">☀ Summer<br><span style="font-weight:400;font-size:.75rem">21 Dec</span></button>
+          <button data-day="79">🍂 Autumn<br><span style="font-weight:400;font-size:.75rem">20 Mar</span></button>
+          <button data-day="172">❄ Winter<br><span style="font-weight:400;font-size:.75rem">21 Jun</span></button>
+          <button data-day="265">🌸 Spring<br><span style="font-weight:400;font-size:.75rem">22 Sep</span></button>
+        </div>
+        <div class="ctrl">
+          <label for="dayslider">Day of the year: <output id="dayout">172</output></label>
+          <input type="range" id="dayslider" min="1" max="365" value="172">
+        </div>
+        <button class="btn btn-quiet" id="tiltoff" style="width:100%; margin-top:6px">🔴 Turn the tilt OFF</button>
+        <div class="readout">
+          <p style="margin:6px 0 2px"><span class="seasonname" id="ro-season">Winter</span></p>
+          <p style="margin:0 0 6px"><b id="ro-date">21 June</b></p>
+          <p style="margin:0">Leaning towards the Sun: <b id="ro-lean">Northern Hemisphere</b></p>
+          <p style="margin:6px 0 0">Daylight in <b class="homecity">Brisbane</b>: <b id="ro-day">10.3 hours</b></p>
+          <p style="margin:2px 0 0; font-size:.85rem" id="ro-note"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="q" for="machineq">Machine challenge — set the tilt OFF and drag through the whole year. What happens to the daylight hours, and what would that mean for seasons on Earth?</label>
+      <textarea id="machineq" placeholder="With no tilt, the daylight hours… so Earth would have…"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your answer → <strong>OneNote → Science → Week 3</strong>. (We'll still do the human solar system outside — you're about to BE this machine.)</p></div>
+    </div>
+  </section>
+
+  <!-- ================= GRAPH LAB ================= -->
+  <section id="graph">
+    <div class="sec-head"><span class="tag">You do</span><h2>Graph Lab — plot Helsinki against your city 📈</h2></div>
+    <div class="card">
+      <p style="margin-top:0"><strong>Your city's daylight line is already plotted (teal) — that was our worked example.</strong> Your job: plot <strong>Helsinki, Finland</strong> (way up north, latitude 60°) using the data table. <strong>Click on the chart</strong> to place each month's point — the highlighted column shows which month you're up to. Click again to fix a point. When all 12 are placed, press <strong>Check my graph</strong>.</p>
+      <table class="data" aria-label="Helsinki daylight hours by month">
+        <tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th></tr>
+        <tr><th>Helsinki (hours)</th><td id="h0"></td><td id="h1"></td><td id="h2"></td><td id="h3"></td><td id="h4"></td><td id="h5"></td><td id="h6"></td><td id="h7"></td><td id="h8"></td><td id="h9"></td><td id="h10"></td><td id="h11"></td></tr>
+      </table>
+      <div class="graph-shell">
+        <canvas id="graphcv" width="760" height="430" aria-label="Click to plot Helsinki's monthly daylight hours"></canvas>
+      </div>
+      <div class="graph-actions">
+        <button class="btn btn-go" id="graph-check">✔ Check my graph</button>
+        <button class="btn btn-quiet" id="graph-reset">↺ Clear my points</button>
+        <span id="graph-score"></span>
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> when your graph checks out, screenshot the whole chart → <strong>OneNote → Science → Week 3</strong>. (Paper backup: your teacher has a printable version if laptops are down.)</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Read your graph like a detective</h3>
+      <label class="q" for="graphq1">1. Both cities have their longest days in their own summer — but whose line swings further between summer and winter? Why might that be? <span class="hint">Look at where Helsinki sits on a globe compared with us.</span></label>
+      <textarea id="graphq1"></textarea>
+      <label class="q" for="graphq2">2. Find where the two lines cross. What time of year is it — and what do we call those special days?</label>
+      <textarea id="graphq2"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot both answers → <strong>OneNote → Science → Week 3</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= PLENARY ================= -->
+  <section id="plenary">
+    <div class="sec-head"><span class="tag">Exit ticket</span><h2>Close the case (for today)</h2></div>
+    <div class="card">
+      <label class="q" for="exitw3">Explain in 2–3 sentences: why does 21 June give <span class="homecity">Brisbane</span> only about <span id="exit-hours">10.3</span> hours of daylight, while Helsinki gets about 18.5? <span class="hint">Use: tilt, hemisphere, leaning.</span></label>
+      <textarea id="exitw3"></textarea>
+      <button class="btn btn-quiet" id="helpbtn">🖐 I need help — show me sentence starters</button>
+      <div class="helpbox" id="helpbox">
+        <strong>Build your answer with these (fill the gaps):</strong><br>
+        • "Earth's axis is t________ at 23.5°."<br>
+        • "In June, the ____________ Hemisphere is leaning <em>away</em> from the Sun, so our days are sh______."<br>
+        • "Helsinki is in the ____________ Hemisphere, which is leaning <em>towards</em> the Sun in June, so its days are l______."<br>
+        • "Helsinki is also much closer to the p______, and places near the poles get the biggest swings in daylight."
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your explanation → <strong>OneNote → Science → Week 3</strong>. This is a rehearsal for your assessment's Part A — keep it somewhere you'll find it.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= CHECKLIST ================= -->
+  <section>
+    <div class="sec-head"><span class="tag">File the case</span><h2>By the end of today, my OneNote Week 3 page has…</h2></div>
+    <div class="card">
+      <div class="check"><input type="checkbox" id="k1"><label for="k1">💻 my <strong>Mission Briefing score</strong></label></div>
+      <div class="check"><input type="checkbox" id="k2"><label for="k2">💻 my <strong>unsealed-case reflection</strong> (how close was my hunch?)</label></div>
+      <div class="check"><input type="checkbox" id="k3"><label for="k3">💻 my <strong>Season Machine challenge</strong> answer (tilt OFF)</label></div>
+      <div class="check"><input type="checkbox" id="k4"><label for="k4">💻 my checked <strong>Helsinki graph</strong> + two detective answers</label></div>
+      <div class="check"><input type="checkbox" id="k5"><label for="k5">💻 my <strong>exit ticket explanation</strong> (tilt · hemisphere · leaning)</label></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Next week:</strong> hands-on space engineering — and your Monday photo strip keeps growing. Watch that shadow shrink.</p>
+    <p>Space Detectives · Year 6 Science · Week 3 study page — original, self-contained, works offline.</p>
+  </footer>
+</div>
+
+<script>
+/* ============ shared: daylight maths ============ */
+const DEG = Math.PI/180;
+function declination(N){ return 23.44 * Math.sin(2*Math.PI*(284+N)/365); }
+function dayLength(latDeg, N, tilt=true){
+  const dec = tilt ? declination(N) : 0;
+  let x = -Math.tan(latDeg*DEG) * Math.tan(dec*DEG);
+  x = Math.max(-1, Math.min(1, x));
+  return 2 * (Math.acos(x)/DEG) / 15;
+}
+const MID = [15,46,74,105,135,166,196,227,258,288,319,349];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let HOME = { name:'Brisbane', lat:27.47 };   // southern hemisphere; stored positive, used as -lat
+
+/* ============ Mission briefing quiz ============ */
+(function(){
+  const jump = document.getElementById('fixup-jump');
+  jump.addEventListener('click', () => {
+    const first = document.querySelector('.mcq .fb.show');
+    if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+  document.getElementById('quiz-check').addEventListener('click', () => {
+    let score = 0, answered = 0;
+    document.querySelectorAll('.mcq').forEach(q => {
+      const correct = q.dataset.answer;
+      const chosen = q.querySelector('input:checked');
+      q.querySelectorAll('.opt').forEach(o => o.classList.remove('right','wrong'));
+      q.querySelector('.fb').classList.remove('show');
+      if (!chosen) return;
+      answered++;
+      const lab = chosen.closest('.opt');
+      if (chosen.value === correct){ score++; lab.classList.add('right'); }
+      else {
+        lab.classList.add('wrong');
+        q.querySelectorAll('input').forEach(i => { if (i.value === correct) i.closest('.opt').classList.add('right'); });
+        q.querySelector('.fb').classList.add('show');
+      }
+    });
+    const out = document.getElementById('quiz-score');
+    out.classList.add('show');
+    const wrong = 5 - score;
+    if (answered < 5){ out.textContent = 'Answer all five questions first! (' + answered + '/5 answered)'; jump.classList.remove('show'); }
+    else if (score === 5){ out.textContent = '\uD83D\uDE80 Score: 5/5 \u2014 perfect launch!'; jump.classList.remove('show'); }
+    else {
+      out.textContent = '\uD83D\uDE80 Score: ' + score + '/5 \u2014 ' + wrong + ' \uD83D\uDD27 fix-up note' + (wrong>1?'s are':' is') +
+        ' waiting in the orange box' + (wrong>1?'es':'') + ' under your red answers. Read ' + (wrong>1?'them':'it') + ', then you\u2019re ready for today.';
+      jump.classList.add('show');
+    }
+  });
+})();
+
+/* ============ Seal ============ */
+document.getElementById('break-seal').addEventListener('click', () => {
+  document.getElementById('seal-closed').style.display = 'none';
+  document.getElementById('seal-content').classList.add('show');
+});
+
+/* ============ Myth flip + vocab ============ */
+(function(){
+  const m = document.getElementById('mythcard');
+  const flip = () => m.classList.toggle('flipped');
+  m.addEventListener('click', flip);
+  m.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); } });
+
+  const def = document.getElementById('vocab-def');
+  document.querySelectorAll('.vchip').forEach(c => c.addEventListener('click', () => {
+    const wasOpen = c.classList.contains('open');
+    document.querySelectorAll('.vchip').forEach(x => x.classList.remove('open'));
+    if (wasOpen){ def.innerHTML = '<em>Tap any word above\u2026</em>'; return; }
+    c.classList.add('open');
+    def.innerHTML = '<strong>' + c.textContent + ':</strong> ' + c.dataset.def;
+  }));
+})();
+
+/* ============ Season Machine ============ */
+const seasonMachine = (function(){
+  const cv = document.getElementById('seasoncv'), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, CX = W/2, CY = 200, OR = 138;
+  const slider = document.getElementById('dayslider');
+  const dayout = document.getElementById('dayout');
+  const tiltBtn = document.getElementById('tiltoff');
+  let tilt = true;
+  const stars = []; for (let i=0;i<70;i++) stars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()+0.3, a:Math.random()*0.5+0.2});
+
+  const SEASONS = [
+    { until:50,  name:'Summer',  emoji:'\u2600' },
+    { until:140, name:'Autumn',  emoji:'\uD83C\uDF42' },
+    { until:232, name:'Winter',  emoji:'\u2744' },
+    { until:326, name:'Spring',  emoji:'\uD83C\uDF38' },
+    { until:366, name:'Summer',  emoji:'\u2600' },
+  ];
+  function seasonFor(N){ return SEASONS.find(s => N < s.until); }
+  function dateFor(N){
+    const days=[31,28,31,30,31,30,31,31,30,31,30,31]; let m=0, d=N;
+    while (d > days[m]){ d -= days[m]; m++; }
+    return d + ' ' + ['January','February','March','April','May','June','July','August','September','October','November','December'][m];
+  }
+
+  function draw(N){
+    ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha = 1;
+    for (const st of stars){ ctx.globalAlpha = st.a; ctx.fillStyle = '#cfd8ea'; ctx.beginPath(); ctx.arc(st.x,st.y,st.r,0,Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+
+    // orbit
+    ctx.strokeStyle = 'rgba(245,242,234,.3)'; ctx.setLineDash([6,6]);
+    ctx.beginPath(); ctx.arc(CX,CY,OR,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+
+    // sun
+    const sg = ctx.createRadialGradient(CX-5,CY-5,4,CX,CY,30);
+    sg.addColorStop(0,'#ffe9b8'); sg.addColorStop(.6,'#f5a623'); sg.addColorStop(1,'rgba(232,147,12,.1)');
+    ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(CX,CY,30,0,Math.PI*2); ctx.fill();
+
+    // earth position: day 355 (Dec solstice) at right (angle 0), anticlockwise through the year
+    const theta = ((N - 355 + 365) % 365) / 365 * 2*Math.PI;
+    const ex = CX + OR*Math.cos(theta), ey = CY - OR*Math.sin(theta);
+    const R = 30;
+
+    // month label around orbit at 4 points
+    ctx.fillStyle = '#8d97b5'; ctx.font = '12px Arial';
+    ctx.fillText('Dec', CX+OR+14, CY+4); ctx.fillText('Jun', CX-OR-38, CY+4);
+    ctx.fillText('Mar', CX-12, CY-OR-10); ctx.fillText('Sep', CX-12, CY+OR+20);
+
+    // earth body
+    const eg = ctx.createRadialGradient(ex-6,ey-6,2,ex,ey,R);
+    eg.addColorStop(0,'#9fd8ff'); eg.addColorStop(1,'#1565c0');
+    ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(ex,ey,R,0,Math.PI*2); ctx.fill();
+
+    // night side: half-disk facing away from sun
+    const phi = Math.atan2(CY-ey, CX-ex); // direction earth -> sun
+    ctx.save(); ctx.translate(ex,ey); ctx.rotate(phi);
+    ctx.fillStyle = 'rgba(10,16,38,.78)';
+    ctx.beginPath(); ctx.arc(0,0,R, Math.PI/2, 3*Math.PI/2, false); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    // axis: constant screen direction (tilted right 23.5° from vertical), or vertical when tilt off
+    const axisAng = (tilt ? 23.5 : 0) * DEG;
+    ctx.save(); ctx.translate(ex,ey); ctx.rotate(axisAng);
+    ctx.strokeStyle = '#e8930c'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0,-R-12); ctx.lineTo(0,R+12); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#f5f2ea'; ctx.font = 'bold 11px Arial';
+    ctx.fillText('N', 5, -R-4); ctx.fillText('S', 5, R+12);
+    ctx.restore();
+
+    // home city marker: the point at the city's latitude closest to the Sun (its midday side)
+    {
+      const aAng = axisAng;                              // axis tilt from vertical
+      const ax = Math.sin(aAng), ay = Math.cos(aAng);    // unit vector along axis toward S (canvas y down)
+      let sx2 = CX-ex, sy2 = CY-ey;
+      const sl = Math.hypot(sx2,sy2); sx2/=sl; sy2/=sl;  // unit vector toward Sun
+      const dot = sx2*ax + sy2*ay;
+      let px = sx2 - dot*ax, py = sy2 - dot*ay;          // sun direction perpendicular to axis
+      const pl = Math.hypot(px,py) || 1; px/=pl; py/=pl;
+      const latR = HOME.lat*DEG;
+      const cx2 = ex + ax*R*Math.sin(latR)*0.92 + px*R*Math.cos(latR)*0.82;
+      const cy2 = ey + ay*R*Math.sin(latR)*0.92 + py*R*Math.cos(latR)*0.82;
+      ctx.fillStyle = '#c0392b';
+      ctx.beginPath(); ctx.arc(cx2, cy2, 4.5, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(cx2, cy2, 4.5, 0, Math.PI*2); ctx.stroke(); ctx.lineWidth = 1;
+      ctx.fillStyle = '#ffd479'; ctx.font = 'bold 11px Arial';
+      ctx.fillText(HOME.name.slice(0,3).toUpperCase(), cx2 + 8, cy2 + 4);
+    }
+
+    // caption
+    ctx.fillStyle = '#f5f2ea'; ctx.font = 'bold 14px Arial';
+    ctx.fillText(tilt ? 'Axis tilted 23.5\u00B0 \u2014 and always pointing the same way' : 'TILT OFF \u2014 axis straight up: watch the daylight hours\u2026', 16, 26);
+    ctx.font = '12px Arial'; ctx.fillStyle = '#8d97b5';
+    ctx.fillText('(not to scale \u2014 distances shrunk so everything fits!)', 16, H-14);
+
+    // readouts
+    const s = seasonFor(N);
+    const dec = tilt ? declination(N) : 0;
+    const hrs = dayLength(-HOME.lat, N, tilt);
+    document.getElementById('ro-season').textContent = s.emoji + ' ' + (tilt ? s.name : 'No seasons');
+    document.getElementById('ro-date').textContent = dateFor(N);
+    document.getElementById('ro-lean').textContent = !tilt ? 'Neither \u2014 no tilt!' : (dec > 1 ? 'Northern Hemisphere' : dec < -1 ? 'Southern Hemisphere (us!)' : 'Neither \u2014 equinox!');
+    document.getElementById('ro-day').textContent = hrs.toFixed(1) + ' hours';
+    document.getElementById('ro-note').textContent = !tilt ? 'Stuck near 12 hours every single day of the year.' :
+      (hrs > 13 ? 'Long days \u2014 we\u2019re leaning towards the Sun.' : hrs < 11 ? 'Short days \u2014 we\u2019re leaning away.' : 'Near 12 hours \u2014 close to an equinox.');
+    dayout.textContent = N;
+  }
+
+  slider.addEventListener('input', () => { draw(parseInt(slider.value,10)); setActive(null); });
+  document.querySelectorAll('.season-btns button').forEach(b => b.addEventListener('click', () => {
+    slider.value = b.dataset.day; draw(parseInt(b.dataset.day,10)); setActive(b);
+  }));
+  function setActive(btn){
+    document.querySelectorAll('.season-btns button').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+  tiltBtn.addEventListener('click', () => {
+    tilt = !tilt;
+    tiltBtn.textContent = tilt ? '\uD83D\uDD34 Turn the tilt OFF' : '\uD83D\uDFE2 Turn the tilt back ON';
+    tiltBtn.classList.toggle('off', !tilt);
+    draw(parseInt(slider.value,10));
+  });
+
+  draw(172);
+  return { redraw: () => draw(parseInt(slider.value,10)) };
+})();
+
+/* ============ Graph Lab ============ */
+const graphLab = (function(){
+  const cv = document.getElementById('graphcv'), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const L = 56, R = 16, T = 18, B = 44;
+  const PW = W-L-R, PH = H-T-B;
+  const HEL = 60.17;
+  const helsinki = MID.map(N => dayLength(HEL, N));
+  const pts = new Array(12).fill(null);
+  let checked = false;
+
+  // fill data table (rounded to .5 so plotting is fair)
+  helsinki.forEach((h,i) => document.getElementById('h'+i).textContent = (Math.round(h*2)/2).toFixed(1));
+
+  function mx(i){ return L + (i+0.5)*PW/12; }
+  function hy(h){ return T + (24-h)/24*PH; }
+  function nextMonth(){ for (let i=0;i<12;i++) if (pts[i]===null) return i; return -1; }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fffdf8'; ctx.fillRect(0,0,W,H);
+    // gridlines
+    ctx.strokeStyle = '#e8e2d4'; ctx.fillStyle = '#5b6478'; ctx.font = '11px Arial'; ctx.textAlign = 'right';
+    for (let h=0; h<=24; h+=4){
+      ctx.beginPath(); ctx.moveTo(L, hy(h)); ctx.lineTo(W-R, hy(h)); ctx.stroke();
+      ctx.fillText(h, L-8, hy(h)+4);
+    }
+    ctx.textAlign = 'center';
+    const nm = nextMonth();
+    for (let i=0;i<12;i++){
+      if (i === nm && !checked){
+        ctx.fillStyle = 'rgba(232,147,12,.12)';
+        ctx.fillRect(L + i*PW/12, T, PW/12, PH);
+      }
+      ctx.fillStyle = (i === nm && !checked) ? '#e8930c' : '#5b6478';
+      ctx.font = (i === nm && !checked) ? 'bold 12px Arial' : '11px Arial';
+      ctx.fillText(MONTHS[i], mx(i), H-26);
+    }
+    // axes labels
+    ctx.save(); ctx.translate(14, T+PH/2); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = '#1b2a4a'; ctx.font = 'bold 12px Arial';
+    ctx.fillText('Daylight (hours)', 0, 0); ctx.restore();
+    ctx.fillStyle = '#1b2a4a'; ctx.font = 'bold 12px Arial';
+    ctx.fillText('Month', L+PW/2, H-8);
+
+    // home city line (pre-plotted worked example)
+    const home = MID.map(N => dayLength(-HOME.lat, N));
+    ctx.strokeStyle = '#0e7c7b'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); home.forEach((h,i) => i ? ctx.lineTo(mx(i),hy(h)) : ctx.moveTo(mx(i),hy(h))); ctx.stroke();
+    home.forEach((h,i) => { ctx.fillStyle = '#0e7c7b'; ctx.beginPath(); ctx.arc(mx(i),hy(h),4,0,Math.PI*2); ctx.fill(); });
+    ctx.fillStyle = '#0e7c7b'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'left';
+    ctx.fillText(HOME.name + ' (done for you)', L+8, hy(home[0])-10);
+
+    // student points + connecting line when complete
+    const allIn = pts.every(p => p !== null);
+    if (allIn){
+      ctx.strokeStyle = 'rgba(91,58,155,.65)'; ctx.lineWidth = 2; ctx.setLineDash(checked?[]:[5,4]);
+      ctx.beginPath(); pts.forEach((h,i) => i ? ctx.lineTo(mx(i),hy(h)) : ctx.moveTo(mx(i),hy(h))); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    pts.forEach((h,i) => {
+      if (h === null) return;
+      let col = '#5b3a9b';
+      if (checked) col = Math.abs(h - helsinki[i]) <= 1.5 ? '#1e8e3e' : '#c0392b';
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(mx(i),hy(h),6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '8px Arial'; ctx.textAlign = 'center';
+      ctx.fillText(MONTHS[i][0], mx(i), hy(h)+3);
+    });
+    if (pts.some(p => p !== null)){
+      ctx.fillStyle = '#5b3a9b'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'left';
+      ctx.fillText('Helsinki (yours)', L+8, T+14);
+    }
+    ctx.textAlign = 'left'; ctx.lineWidth = 1;
+  }
+
+  cv.addEventListener('click', e => {
+    const r = cv.getBoundingClientRect();
+    const x = (e.clientX - r.left) * (W / r.width);
+    const y = (e.clientY - r.top) * (H / r.height);
+    if (x < L || x > W-R || y < T || y > T+PH) return;
+    const i = Math.min(11, Math.max(0, Math.floor((x-L)/(PW/12))));
+    if (pts[i] !== null && Math.abs(y - hy(pts[i])) < 12){
+      pts[i] = null;                                   // clicked the dot itself: remove it
+    } else {
+      const h = Math.round(((24 - (y-T)/PH*24)) * 2) / 2;
+      pts[i] = Math.max(0, Math.min(24, h));
+    }
+    checked = false;
+    document.getElementById('graph-score').textContent = '';
+    draw();
+  });
+
+  document.getElementById('graph-check').addEventListener('click', () => {
+    const placed = pts.filter(p => p !== null).length;
+    const score = document.getElementById('graph-score');
+    if (placed < 12){ score.textContent = 'Place all 12 months first (' + placed + '/12 placed).'; return; }
+    checked = true; draw();
+    const right = pts.filter((h,i) => Math.abs(h - helsinki[i]) <= 1.5).length;
+    score.textContent = right === 12 ? '\uD83C\uDFC5 12/12 \u2014 a perfect curve! Screenshot time.' :
+      right + '/12 close enough \u2014 click the red months to adjust, then check again.';
+  });
+  document.getElementById('graph-reset').addEventListener('click', () => {
+    pts.fill(null); checked = false;
+    document.getElementById('graph-score').textContent = ''; draw();
+  });
+
+  draw();
+  return { redraw: draw };
+})();
+
+/* ============ Home base ============ */
+(function(){
+  const sel = document.getElementById('citysel');
+  sel.addEventListener('change', () => {
+    const [name, lat] = sel.value.split('|');
+    HOME = { name, lat: parseFloat(lat) };
+    document.querySelectorAll('.homecity').forEach(s => s.textContent = name);
+    document.getElementById('exit-hours').textContent = dayLength(-HOME.lat, 172).toFixed(1);
+    seasonMachine.redraw();
+    graphLab.redraw();
+  });
+})();
+
+/* ============ Help button ============ */
+document.getElementById('helpbtn').addEventListener('click', () => {
+  document.getElementById('helpbox').classList.toggle('show');
+});
+</script>
+</body>
+</html>

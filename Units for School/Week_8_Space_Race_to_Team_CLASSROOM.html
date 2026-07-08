@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8 — From Space Race to Space Team | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:900px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:30px 20px 34px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:900px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.3rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+
+  section{margin-top:44px; scroll-margin-top:70px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:3px solid var(--ink); padding-bottom:6px; margin-bottom:18px}
+  .sec-head .tag{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.12em;
+    background:var(--ink); color:var(--paper); padding:3px 10px; border-radius:4px; text-transform:uppercase; white-space:nowrap}
+  .sec-head h2{margin:0; font-size:1.3rem}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:16px}
+  .card h3{margin:0 0 12px; font-size:1.08rem}
+  .notice{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0; padding:14px 18px; margin-bottom:16px}
+  .notice p{margin:0 0 8px} .notice p:last-child{margin:0}
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:14px}
+  .evidence .icon{font-size:1.3rem; line-height:1} .evidence p{margin:0; font-size:.93rem} .evidence strong{color:var(--evidence)}
+  textarea{width:100%; min-height:80px; resize:vertical; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8; font-family:inherit; font-size:1rem; color:var(--ink); padding:10px 12px}
+  label.q{display:block; font-weight:700; margin:12px 0 6px}
+  label.q .hint{font-weight:400; font-style:italic; color:#5b6478}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem; border:none; border-radius:8px; padding:10px 16px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+
+  /* quiz */
+  .mcq{border-bottom:1px dashed var(--line); padding:12px 0}
+  .mcq:last-of-type{border-bottom:none}
+  .mcq p{margin:0 0 8px; font-weight:700}
+  .opt{display:block; margin:5px 0; padding:8px 12px; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8; cursor:pointer; font-size:.97rem}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-right:10px; accent-color:var(--teal)}
+  .opt.right{background:var(--good-soft); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .mcq .fb{font-size:.93rem; margin:8px 0 0; display:none; background:var(--sun-soft); border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:9px 13px}
+  .mcq .fb::before{content:"\1F527 Fix-up note: "; font-weight:700; color:#9c6206; font-family:"Space Grotesk",sans-serif}
+  .mcq .fb.show{display:block}
+  .scoreline{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.1rem; margin-top:14px; display:none}
+  .scoreline.show{display:block}
+  #fixup-jump{display:none; margin-top:8px} #fixup-jump.show{display:inline-block}
+
+  /* timeline order game */
+  .tl-bank{display:flex; flex-direction:column; gap:8px; margin-bottom:14px}
+  .tl-item{display:flex; align-items:center; gap:12px; padding:12px 14px; background:#fffdf8; border:1.5px solid var(--line);
+    border-radius:10px; cursor:grab}
+  .tl-item.dragging{opacity:.4}
+  .tl-item .grip{color:#b9b2a2; font-size:1.2rem; cursor:grab}
+  .tl-item .ic{font-size:1.5rem; flex:0 0 auto}
+  .tl-item .body{flex:1}
+  .tl-item .body b{font-family:"Space Grotesk",sans-serif; display:block}
+  .tl-item .body .desc{font-size:.88rem; color:#5b6478}
+  .tl-item .yr{font-family:"Space Grotesk",sans-serif; font-weight:700; color:var(--teal); font-size:.85rem; opacity:0}
+  .tl-item.checked .yr{opacity:1}
+  .tl-item.ok{border-color:var(--good); background:var(--good-soft)}
+  .tl-item.no{border-color:var(--bad); background:var(--bad-soft)}
+  .tl-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  #tl-score{font-family:"Space Grotesk",sans-serif; font-weight:700}
+
+  /* reveal cards */
+  .info-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:640px){.info-grid{grid-template-columns:1fr}}
+  .info{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px}
+  .info h3{margin:0 0 8px; font-size:1rem}
+  .info svg{width:100%; height:120px; background:#0d1530; border-radius:8px; margin-bottom:8px}
+  .info p{margin:0; font-size:.93rem}
+
+  .person{display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed var(--line)}
+  .person:last-child{border-bottom:none}
+  .person .av{flex:0 0 44px; height:44px; border-radius:50%; background:var(--teal-soft); display:flex; align-items:center; justify-content:center; font-size:1.3rem}
+  .person .body b{font-family:"Space Grotesk",sans-serif}
+  .person .body .role{font-size:.88rem; color:#5b6478}
+
+  .studio-step{display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed var(--line)}
+  .studio-step:last-child{border-bottom:none}
+  .studio-step .n{flex:0 0 30px; height:30px; border-radius:50%; background:var(--ink); color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.85rem}
+
+  .helpbox{display:none; background:var(--sun-soft); border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:12px 14px; margin-top:10px; font-size:.95rem}
+  .helpbox.show{display:block}
+
+  .check{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input{width:20px; height:20px; margin-top:3px; accent-color:var(--teal)}
+
+  footer{margin-top:50px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.stationnav{position:static}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Final Case · Week 8</p>
+    <h1>From Space Race to Space Team</h1>
+    <p>The last case: how a race between two rivals became the biggest team effort in human history — with Australia in the thick of it.</p>
+  </div>
+</header>
+
+<nav class="stationnav" aria-label="Jump to a section">
+  <a href="#briefing">🚀 Briefing</a>
+  <a href="#timeline">🛰 Timeline</a>
+  <a href="#australia">🇦🇺 Australia</a>
+  <a href="#team">🤝 Race to Team</a>
+  <a href="#people">👩‍🚀 People</a>
+  <a href="#studio">🎬 Studio</a>
+  <a href="#exit">🎫 Exit</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ================= BRIEFING ================= -->
+  <section id="briefing">
+    <div class="sec-head"><span class="tag">Start here</span><h2>Mission Briefing — final retrieval, marks itself</h2></div>
+    <div class="card">
+      <div class="mcq" data-answer="c">
+        <p>1. What causes day and night?</p>
+        <label class="opt"><input type="radio" name="q1" value="a">Earth moving closer to and further from the Sun</label>
+        <label class="opt"><input type="radio" name="q1" value="b">The Sun orbiting Earth daily</label>
+        <label class="opt"><input type="radio" name="q1" value="c">Earth rotating on its axis once every 24 hours</label>
+        <p class="fb">Earth's <strong>rotation</strong> — the lit half has day, the dark half night.</p>
+      </div>
+      <div class="mcq" data-answer="b">
+        <p>2. What causes the seasons?</p>
+        <label class="opt"><input type="radio" name="q2" value="a">Distance from the Sun</label>
+        <label class="opt"><input type="radio" name="q2" value="b">Earth's 23.5° tilt as it orbits</label>
+        <label class="opt"><input type="radio" name="q2" value="c">The Sun's brightness changing</label>
+        <p class="fb">The <strong>tilt</strong>, not distance — closest to the Sun in January, our summer.</p>
+      </div>
+      <div class="mcq" data-answer="a">
+        <p>3. Why did models of the solar system change through history?</p>
+        <label class="opt"><input type="radio" name="q3" value="a">New evidence was found and scientists built on earlier work</label>
+        <label class="opt"><input type="radio" name="q3" value="b">People simply got bored of old ideas</label>
+        <label class="opt"><input type="radio" name="q3" value="c">The planets actually moved</label>
+        <p class="fb">Evidence + building on others. Galileo → Newton, just like the space milestones today build on each other.</p>
+      </div>
+      <div class="mcq" data-answer="c">
+        <p>4. First Nations Peoples used the sky to…</p>
+        <label class="opt"><input type="radio" name="q4" value="a">tell fictional stories only</label>
+        <label class="opt"><input type="radio" name="q4" value="b">predict the lottery</label>
+        <label class="opt"><input type="radio" name="q4" value="c">track seasons and know when to find food — an accurate calendar</label>
+        <p class="fb">Careful observation → patterns → predictions: science used as a precise seasonal calendar.</p>
+      </div>
+      <div class="mcq" data-answer="b">
+        <p>5. Science works best when…</p>
+        <label class="opt"><input type="radio" name="q5" value="a">one country keeps all its discoveries secret</label>
+        <label class="opt"><input type="radio" name="q5" value="b">people and countries share knowledge and build on each other's work</label>
+        <label class="opt"><input type="radio" name="q5" value="c">nobody checks anybody's evidence</label>
+        <p class="fb">Collaboration is the engine of science — exactly today's big idea, and Part B and C of your assessment.</p>
+      </div>
+      <button class="btn btn-go" id="quiz-check">✔ Check my answers</button>
+      <p class="scoreline" id="quiz-score"></p>
+      <button class="btn btn-quiet" id="fixup-jump">🔧 Take me to my first fix-up note</button>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your score → <strong>OneNote → Science → Week 8</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= TIMELINE ORDER ================= -->
+  <section id="timeline">
+    <div class="sec-head"><span class="tag">You do</span><h2>Put the space milestones in order 🛰</h2></div>
+    <div class="notice"><p><strong>Drag</strong> the milestones into the order you think they happened, earliest at the top. Use the ▲▼ buttons if you prefer. Press <strong>Check the timeline</strong> — the years appear and correct ones turn green. This is the backbone of a great Part B timeline for your assessment.</p></div>
+    <div class="card">
+      <div class="tl-bank" id="tl-bank"></div>
+      <div class="tl-actions">
+        <button class="btn btn-go" id="tl-check">✔ Check the timeline</button>
+        <button class="btn btn-quiet" id="tl-shuffle">🔀 Shuffle</button>
+        <span id="tl-score"></span>
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your checked timeline → <strong>OneNote → Science → Week 8</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= AUSTRALIA ================= -->
+  <section id="australia">
+    <div class="sec-head"><span class="tag">Did you know?</span><h2>Australia and the Moon landing 🇦🇺</h2></div>
+    <div class="card">
+      <svg viewBox="0 0 600 130" role="img" aria-label="Apollo 11 signal relayed from the Moon to dishes in Australia to the world" style="width:100%;height:auto;background:#0d1530;border-radius:10px;margin-bottom:12px">
+        <circle cx="70" cy="40" r="20" fill="#bdb7aa"/><text x="48" y="78" fill="#8d97b5" font-size="11" font-family="Arial">Moon</text>
+        <path d="M90 48 Q300 90 300 100" stroke="#9fd8ff" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+        <polygon points="295,92 305,96 298,104" fill="#e8930c"/>
+        <text x="250" y="118" fill="#f5d27a" font-size="11" font-family="Arial">dish near Parkes &amp; Honeysuckle Creek, NSW</text>
+        <rect x="280" y="100" width="40" height="6" fill="#8a8276"/><line x1="300" y1="100" x2="300" y2="86" stroke="#8a8276" stroke-width="2"/>
+        <path d="M320 100 Q450 80 560 50" stroke="#9fd8ff" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+        <text x="470" y="40" fill="#cfd8ea" font-size="11" font-family="Arial">…to 600 million</text>
+        <text x="470" y="54" fill="#cfd8ea" font-size="11" font-family="Arial">TV viewers worldwide</text>
+      </svg>
+      <p>When Neil Armstrong stepped onto the Moon in <strong>1969</strong>, the clearest TV pictures were received by radio dishes in <strong>New South Wales</strong> — the Parkes telescope and the Honeysuckle Creek tracking station near Canberra. As Earth turned, Australia was facing the Moon at exactly the right moment, so our dishes relayed that famous footage to about <strong>600 million people</strong>. The whole planet watched the Moon landing partly through Australian eyes.</p>
+      <label class="q" for="auq">How is this a good example of countries needing to work <em>together</em> in space science?</label>
+      <textarea id="auq" placeholder="Australia was important because…"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your answer → <strong>OneNote → Science → Week 8</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= RACE TO TEAM ================= -->
+  <section id="team">
+    <div class="sec-head"><span class="tag">Explicit teaching</span><h2>From a race to a team — and a mess to clean up</h2></div>
+    <div class="info-grid">
+      <div class="info">
+        <h3>🏁 The Space Race (1950s–60s)</h3>
+        <svg viewBox="0 0 280 120" role="img" aria-label="two rockets racing upward representing two competing countries">
+          <rect width="280" height="120" fill="#0d1530"/>
+          <polygon points="90,100 98,70 106,100" fill="#c0392b"/><polygon points="98,70 98,55 104,70" fill="#e8930c"/>
+          <polygon points="170,90 178,50 186,90" fill="#1565c0"/><polygon points="178,50 178,32 184,50" fill="#9fd8ff"/>
+          <text x="60" y="116" fill="#8d97b5" font-size="10" font-family="Arial">two rivals, racing to be first</text>
+        </svg>
+        <p>The space race was a <strong>competition</strong> between the USA and the Soviet Union. Competition drove fast progress: the first satellite, first person in space, first Moon landing — all within about 12 years.</p>
+      </div>
+      <div class="info">
+        <h3>🤝 The Space Team (today)</h3>
+        <svg viewBox="0 0 280 120" role="img" aria-label="the International Space Station built from many countries' parts">
+          <rect width="280" height="120" fill="#0d1530"/>
+          <rect x="120" y="56" width="40" height="10" fill="#cfd8ea"/>
+          <rect x="80" y="58" width="36" height="6" fill="#e8930c"/><rect x="164" y="58" width="36" height="6" fill="#1565c0"/>
+          <rect x="60" y="50" width="14" height="22" fill="#2f9e44"/><rect x="206" y="50" width="14" height="22" fill="#c0392b"/>
+          <text x="70" y="100" fill="#8d97b5" font-size="10" font-family="Arial">the ISS — built by 15+ nations together</text>
+        </svg>
+        <p>Today the biggest projects are <strong>collaborations</strong>. The International Space Station was built by <strong>15+ countries</strong>; the James Webb Space Telescope is NASA + Europe (ESA) + Canada (CSA). Sharing knowledge gets us further than any country could alone.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>♻ A shared problem: space junk</h3>
+      <p>Sixty years of launches have left <strong>millions of pieces of debris</strong> orbiting Earth — dead satellites, rocket parts, even flecks of paint, all moving fast enough to be dangerous. No single country can fix it: keeping space usable is a <strong>shared responsibility</strong>, like looking after any shared environment. (Missions like DART even test how we might protect Earth from asteroids — planetary defence is a team sport too.)</p>
+      <label class="q" for="junkq">Why is space junk a problem that countries have to solve <em>together</em>? <span class="hint">Think about who put it there and whose orbits it affects.</span></label>
+      <textarea id="junkq" style="min-height:55px"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your answer → <strong>OneNote → Science → Week 8</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= PEOPLE ================= -->
+  <section id="people">
+    <div class="sec-head"><span class="tag">Many hands</span><h2>It took all kinds of people</h2></div>
+    <div class="card">
+      <p style="margin-top:0">Space science isn't just famous astronauts. It took mathematicians, engineers and scientists from many countries and backgrounds — and plenty were left out of the story for too long.</p>
+      <div class="person"><div class="av">🧮</div><div class="body"><b>Katherine Johnson</b> <span class="role">(USA)</span><br>Mathematician whose calculations put the first Americans safely into orbit and on the path to the Moon.</div></div>
+      <div class="person"><div class="av">🚀</div><div class="body"><b>Valentina Tereshkova</b> <span class="role">(Soviet Union)</span><br>The first woman in space, in 1963 — decades before many countries sent any women at all.</div></div>
+      <div class="person"><div class="av">🛰</div><div class="body"><b>Andy Thomas</b> <span class="role">(Australia)</span><br>Adelaide-born astronaut who flew on the Space Shuttle and lived aboard the Mir space station and the ISS.</div></div>
+      <div class="person"><div class="av">📡</div><div class="body"><b>The Parkes &amp; Honeysuckle Creek teams</b> <span class="role">(Australia)</span><br>The engineers who relayed the Moon-landing broadcast to the world.</div></div>
+      <label class="q" for="peopleq">Pick one person above. Why is it important their contribution is remembered?</label>
+      <textarea id="peopleq" style="min-height:55px"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your answer → <strong>OneNote → Science → Week 8</strong>. Any of these is a great contribution for Part B!</p></div>
+    </div>
+  </section>
+
+  <!-- ================= STUDIO ================= -->
+  <section id="studio">
+    <div class="sec-head"><span class="tag">Assessment studio</span><h2>Build your project — work session</h2></div>
+    <div class="card">
+      <p style="margin-top:0">You now have everything you need. Use this session to push your assessment forward. Work through these checkpoints — your teacher will conference with you along the way.</p>
+      <div class="studio-step"><div class="n">1</div><div><b>Part A — the model.</b> Is your model of the Sun, Earth and planets drafted, and does your explanation cover at least TWO things we observe (day/night, seasons, shadows, daylight length)? Remember: positions and movement cause them — never "distance from the Sun".</div></div>
+      <div class="studio-step"><div class="n">2</div><div><b>Part B — the detectives.</b> Have you chosen at least FOUR contributions from different people, cultures or countries? Have you shown how one <em>built on</em> another? (Ptolemy→Copernicus→Galileo→Newton; First Nations astronomers; Australia's Apollo role; Katherine Johnson…)</div></div>
+      <div class="studio-step"><div class="n">3</div><div><b>Part C — the reflection.</b> Have you planned your 4–6 sentences on why science is a team effort across time and countries, with one specific example?</div></div>
+      <div class="studio-step"><div class="n">4</div><div><b>Feedback.</b> Swap with a partner. Give TAG feedback: <b>T</b>ell something good, <b>A</b>sk a question, <b>G</b>ive a suggestion against the rubric.</div></div>
+      <label class="q" for="fbgot">Feedback I received today:</label>
+      <textarea id="fbgot" style="min-height:55px"></textarea>
+      <label class="q" for="fbdo">One thing I'll change because of it:</label>
+      <textarea id="fbdo" style="min-height:55px"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your feedback notes → <strong>OneNote → Science → Assessment</strong>. Acting on feedback is exactly what scientists do.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= EXIT ================= -->
+  <section id="exit">
+    <div class="sec-head"><span class="tag">Exit ticket</span><h2>Close the final case</h2></div>
+    <div class="card">
+      <label class="q" for="exitw8">The unit's big question was: <em>how do we know what we know about space — and who helped us find out?</em> Answer in 2–3 sentences, mentioning collaboration. <span class="hint">Use: evidence, models, built on, collaboration.</span></label>
+      <textarea id="exitw8"></textarea>
+      <button class="btn btn-quiet" id="helpbtn">🖐 I need help — show me sentence starters</button>
+      <div class="helpbox" id="helpbox">
+        <strong>Build your answer with these:</strong><br>
+        • "We know what we know because scientists gathered e__________ and built m________."<br>
+        • "Each discovery b________ on earlier ones — from Ptolemy to Newton, and from First Nations astronomers to today."<br>
+        • "Big achievements like the ISS show science works best through c____________ between many countries."
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your final answer → <strong>OneNote → Science → Week 8</strong>. Case closed, detective. 🎉</p></div>
+    </div>
+  </section>
+
+  <!-- ================= CHECKLIST ================= -->
+  <section>
+    <div class="sec-head"><span class="tag">File the case</span><h2>By the end of today, my OneNote has…</h2></div>
+    <div class="card">
+      <div class="check"><input type="checkbox" id="k1"><label for="k1">💻 my <strong>Mission Briefing score</strong></label></div>
+      <div class="check"><input type="checkbox" id="k2"><label for="k2">💻 my <strong>ordered space timeline</strong></label></div>
+      <div class="check"><input type="checkbox" id="k3"><label for="k3">💻 my <strong>Australia</strong> and <strong>space junk</strong> answers</label></div>
+      <div class="check"><input type="checkbox" id="k4"><label for="k4">💻 my <strong>chosen contributor</strong> answer</label></div>
+      <div class="check"><input type="checkbox" id="k5"><label for="k5">💻 my <strong>feedback notes</strong> + one change to make</label></div>
+      <div class="check"><input type="checkbox" id="k6"><label for="k6">💻 my <strong>final exit ticket</strong> answering the big question</label></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Weeks 9–10:</strong> finish, present and celebrate your Space Detectives Showcase. You've travelled from gravity to galaxies — and learned how humans, together, figured it all out.</p>
+    <p>Space Detectives · Year 6 Science · Week 8 study page — original, self-contained, works offline.</p>
+  </footer>
+</div>
+
+<script>
+/* ===== quiz ===== */
+(function(){
+  const jump = document.getElementById('fixup-jump');
+  jump.addEventListener('click', () => { const f = document.querySelector('.mcq .fb.show'); if (f) f.scrollIntoView({behavior:'smooth',block:'center'}); });
+  document.getElementById('quiz-check').addEventListener('click', () => {
+    let score=0, answered=0;
+    document.querySelectorAll('.mcq').forEach(q => {
+      const correct=q.dataset.answer, chosen=q.querySelector('input:checked');
+      q.querySelectorAll('.opt').forEach(o=>o.classList.remove('right','wrong'));
+      q.querySelector('.fb').classList.remove('show');
+      if(!chosen) return; answered++;
+      const lab=chosen.closest('.opt');
+      if(chosen.value===correct){score++; lab.classList.add('right');}
+      else{ lab.classList.add('wrong'); q.querySelectorAll('input').forEach(i=>{if(i.value===correct)i.closest('.opt').classList.add('right');}); q.querySelector('.fb').classList.add('show'); }
+    });
+    const out=document.getElementById('quiz-score'); out.classList.add('show');
+    const wrong=5-score;
+    if(answered<5){ out.textContent='Answer all five questions first! ('+answered+'/5 answered)'; jump.classList.remove('show'); }
+    else if(score===5){ out.textContent='\uD83D\uDE80 Score: 5/5 \u2014 perfect launch!'; jump.classList.remove('show'); }
+    else{ out.textContent='\uD83D\uDE80 Score: '+score+'/5 \u2014 '+wrong+' \uD83D\uDD27 fix-up note'+(wrong>1?'s are':' is')+' waiting in the orange box'+(wrong>1?'es':'')+' under your red answers. Read '+(wrong>1?'them':'it')+', then you\u2019re ready.'; jump.classList.add('show'); }
+  });
+})();
+
+/* ===== timeline order ===== */
+(function(){
+  const DATA = [
+    { ic:'🛰', name:'Sputnik 1', yr:1957, desc:'First artificial satellite (Soviet Union)' },
+    { ic:'👨‍🚀', name:'Gagarin orbits Earth', yr:1961, desc:'First human in space (Soviet Union)' },
+    { ic:'🌙', name:'Apollo 11 Moon landing', yr:1969, desc:'First people on the Moon — relayed via Australia' },
+    { ic:'🪐', name:'Voyager probes launched', yr:1977, desc:'Grand tour of the outer planets (USA)' },
+    { ic:'🔭', name:'Hubble Space Telescope', yr:1990, desc:'Deep views of the universe (NASA + ESA)' },
+    { ic:'🏠', name:'ISS first piece launched', yr:1998, desc:'A space station built by 15+ nations' },
+    { ic:'✨', name:'James Webb Space Telescope', yr:2021, desc:'NASA + ESA + Canada; sees the earliest galaxies' },
+    { ic:'🎯', name:'DART asteroid test', yr:2022, desc:'First test of nudging an asteroid (planetary defence)' },
+  ];
+  const bank = document.getElementById('tl-bank');
+  let order = DATA.map((_,i)=>i);
+  let dragIdx = null;
+
+  function render(){
+    bank.innerHTML = '';
+    order.forEach((di, pos) => {
+      const d = DATA[di];
+      const el = document.createElement('div');
+      el.className = 'tl-item'; el.draggable = true; el.dataset.pos = pos;
+      el.innerHTML = '<span class="grip">⠿</span><span class="ic">'+d.ic+'</span>'+
+        '<span class="body"><b>'+d.name+'</b><span class="desc">'+d.desc+'</span></span>'+
+        '<span class="yr">'+d.yr+'</span>'+
+        '<span style="display:flex;flex-direction:column;gap:2px">'+
+        '<button class="btn btn-quiet" data-up="'+pos+'" style="padding:2px 8px" aria-label="move up">▲</button>'+
+        '<button class="btn btn-quiet" data-down="'+pos+'" style="padding:2px 8px" aria-label="move down">▼</button></span>';
+      bank.appendChild(el);
+    });
+    bindRows();
+  }
+  function bindRows(){
+    bank.querySelectorAll('.tl-item').forEach(el => {
+      el.addEventListener('dragstart', () => { dragIdx = +el.dataset.pos; el.classList.add('dragging'); });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      el.addEventListener('dragover', e => { e.preventDefault(); });
+      el.addEventListener('drop', e => { e.preventDefault(); const to = +el.dataset.pos; move(dragIdx, to); });
+    });
+    bank.querySelectorAll('[data-up]').forEach(b => b.addEventListener('click', () => { const p=+b.dataset.up; if(p>0) move(p,p-1); }));
+    bank.querySelectorAll('[data-down]').forEach(b => b.addEventListener('click', () => { const p=+b.dataset.down; if(p<order.length-1) move(p,p+1); }));
+  }
+  function move(from, to){
+    if(from===null||from===to) return;
+    const x = order.splice(from,1)[0];
+    order.splice(to,0,x);
+    document.getElementById('tl-score').textContent=''; render();
+  }
+  document.getElementById('tl-check').addEventListener('click', () => {
+    let correct = 0;
+    const rows = bank.querySelectorAll('.tl-item');
+    order.forEach((di, pos) => {
+      const d = DATA[di]; const row = rows[pos];
+      row.classList.add('checked');
+      const rightHere = DATA.slice().sort((a,b)=>a.yr-b.yr)[pos].yr === d.yr;
+      row.classList.toggle('ok', rightHere); row.classList.toggle('no', !rightHere);
+      if(rightHere) correct++;
+    });
+    document.getElementById('tl-score').textContent = correct===DATA.length ?
+      '\uD83C\uDFC5 Perfect chronological order! Screenshot it.' :
+      correct+'/'+DATA.length+' in the right spot \u2014 the years are showing now, so reorder the reds and check again.';
+  });
+  document.getElementById('tl-shuffle').addEventListener('click', () => {
+    for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+    document.getElementById('tl-score').textContent=''; render();
+  });
+  // start shuffled
+  for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+  render();
+})();
+
+/* ===== help ===== */
+document.getElementById('helpbtn').addEventListener('click',()=>document.getElementById('helpbox').classList.toggle('show'));
+</script>
+</body>
+</html>

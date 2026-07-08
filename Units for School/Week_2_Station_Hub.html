@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2 — Spinning Earth: Station Hub | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --bad-soft:#fdeceb;
+    --good:#1e8e3e; --good-soft:#e8f5e9;
+    --stA:#b3541e; --stB:#0e7c7b; --stC:#5b3a9b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3,h4{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:920px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:30px 20px 34px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:920px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.3rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+
+  /* station nav */
+  .stationnav{position:sticky; top:0; z-index:30; background:var(--ink); padding:10px 20px;
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; box-shadow:0 2px 8px rgba(27,42,74,.35)}
+  .stationnav a{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.85rem; text-decoration:none;
+    color:#f5f2ea; padding:7px 13px; border-radius:999px; border:1.5px solid rgba(245,242,234,.35)}
+  .stationnav a:hover{border-color:var(--sun); color:var(--sun)}
+
+  section{margin-top:44px; scroll-margin-top:70px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:3px solid var(--ink); padding-bottom:6px; margin-bottom:18px}
+  .sec-head .tag{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.12em;
+    background:var(--ink); color:var(--paper); padding:3px 10px; border-radius:4px; text-transform:uppercase; white-space:nowrap}
+  .sec-head h2{margin:0; font-size:1.3rem}
+  .sec-head.stA{border-color:var(--stA)} .sec-head.stA .tag{background:var(--stA)}
+  .sec-head.stB{border-color:var(--stB)} .sec-head.stB .tag{background:var(--stB)}
+  .sec-head.stC{border-color:var(--stC)} .sec-head.stC .tag{background:var(--stC)}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:16px}
+  .card h3{margin:0 0 12px; font-size:1.08rem}
+  .notice{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0;
+    padding:14px 18px; margin-bottom:16px}
+  .notice p{margin:0 0 8px} .notice p:last-child{margin:0}
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:14px}
+  .evidence .icon{font-size:1.3rem; line-height:1}
+  .evidence p{margin:0; font-size:.93rem}
+  .evidence strong{color:var(--evidence)}
+  textarea{width:100%; min-height:80px; resize:vertical; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; font-family:inherit; font-size:1rem; color:var(--ink); padding:10px 12px}
+  label.q{display:block; font-weight:700; margin:12px 0 6px}
+  label.q .hint{font-weight:400; font-style:italic; color:#5b6478}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem;
+    border:none; border-radius:8px; padding:10px 16px; cursor:pointer}
+  .btn-go{background:var(--teal); color:#fff} .btn-go:hover{background:#0a5e5d}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)} .btn-quiet:hover{background:#ddd6c5}
+
+  /* ===== Mission briefing quiz ===== */
+  .mcq{border-bottom:1px dashed var(--line); padding:12px 0}
+  .mcq:last-of-type{border-bottom:none}
+  .mcq p{margin:0 0 8px; font-weight:700}
+  .opt{display:block; margin:5px 0; padding:8px 12px; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; cursor:pointer; font-size:.97rem}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-right:10px; accent-color:var(--teal)}
+  .opt.right{background:var(--good-soft); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .mcq .fb{font-size:.93rem; margin:8px 0 0; display:none; background:var(--sun-soft);
+    border-left:4px solid var(--sun); border-radius:0 8px 8px 0; padding:9px 13px}
+  .mcq .fb::before{content:"\1F527 Fix-up note: "; font-weight:700; color:#9c6206;
+    font-family:"Space Grotesk",sans-serif}
+  .mcq .fb.show{display:block}
+  .scoreline{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1.1rem; margin-top:14px; display:none}
+  .scoreline.show{display:block}
+  #fixup-jump{display:none; margin-top:8px}
+  #fixup-jump.show{display:inline-block}
+
+  /* ===== Shadow fast-forward ===== */
+  .sim-shell{background:#0d1530; border-radius:12px; padding:0; overflow:hidden; box-shadow:0 4px 14px rgba(13,21,48,.35)}
+  .sim-shell canvas{display:block; width:100%; height:auto}
+  .sim-controls{display:flex; gap:14px; align-items:center; flex-wrap:wrap; background:var(--card);
+    border:1px solid var(--line); border-top:none; border-radius:0 0 12px 12px; padding:14px 16px; margin-bottom:14px}
+  .sim-controls label{font-weight:700; font-size:.95rem; white-space:nowrap}
+  .sim-controls input[type=range]{flex:1; min-width:160px; accent-color:var(--sun)}
+  .sim-readout{font-size:.92rem; color:#5b6478; width:100%}
+  .sim-readout b{color:var(--ink)}
+  .sealed{display:flex; gap:12px; align-items:flex-start; background:#f0eee8; border:1.5px solid var(--line);
+    border-radius:10px; padding:12px 16px; margin-top:12px; font-size:.93rem; color:#5b6478}
+
+  /* ===== Station A animations ===== */
+  .anim-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px}
+  .anim-card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center}
+  .anim-stage{height:130px; display:flex; align-items:center; justify-content:center; background:#f4f1ea;
+    border-radius:8px; margin-bottom:10px; position:relative; overflow:hidden}
+  .anim-card h4{margin:0 0 8px; font-size:.98rem}
+  .ans-btns{display:flex; gap:6px; justify-content:center; flex-wrap:wrap}
+  .ans-btns button{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; padding:7px 10px;
+    border-radius:999px; border:1.5px solid var(--line); background:#fffdf8; cursor:pointer}
+  .ans-btns button:hover{border-color:var(--ink)}
+  .anim-card .fb{font-size:.85rem; margin:8px 0 0; min-height:2.4em}
+  .anim-card.right .anim-stage{outline:3px solid var(--good)}
+  .anim-card.wrong .anim-stage{outline:3px solid var(--bad)}
+  @keyframes spin360{to{transform:rotate(360deg)}}
+  @keyframes orbitpath{to{transform:rotate(360deg)}}
+  .spinner{width:54px; height:54px; animation:spin360 2.5s linear infinite}
+  .orbit-wrap{width:110px; height:110px; position:relative}
+  .orbit-ring2{position:absolute; inset:0; border:1.5px dashed #b9b2a2; border-radius:50%;
+    animation:orbitpath 4s linear infinite}
+  .orbit-body{position:absolute; top:-9px; left:50%; margin-left:-9px; width:18px; height:18px; border-radius:50%}
+  .centre-body{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%}
+  .spin-too{animation:spin360 1.2s linear infinite}
+  @media (prefers-reduced-motion: reduce){ .spinner,.orbit-ring2,.spin-too{animation-duration:12s} }
+
+  details.teachercard{background:#fff8ec; border:1.5px solid var(--sun); border-radius:10px; padding:0; margin-top:16px}
+  details.teachercard summary{font-family:"Space Grotesk",sans-serif; font-weight:700; cursor:pointer;
+    padding:13px 16px; color:#9c6206; list-style-position:inside}
+  details.teachercard .inner{padding:0 18px 16px}
+  details.teachercard ol, details.teachercard ul{margin:8px 0; padding-left:22px}
+  details.teachercard li{margin-bottom:7px; font-size:.95rem}
+
+  /* ===== Station B steps ===== */
+  .step-row{display:flex; gap:16px; align-items:flex-start; padding:14px 0; border-bottom:1px dashed var(--line)}
+  .step-row:last-of-type{border-bottom:none}
+  .step-num{flex:0 0 32px; height:32px; border-radius:50%; background:var(--stB); color:#fff;
+    font-family:"Space Grotesk",sans-serif; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .step-pic{flex:0 0 150px}
+  .step-pic svg{width:150px; height:110px; background:#f4f1ea; border-radius:8px}
+  .step-text{flex:1}
+  .step-text p{margin:0 0 6px}
+  .step-text .check-it{font-size:.88rem; color:var(--teal); font-style:italic}
+  @media (max-width:620px){ .step-row{flex-wrap:wrap} .step-pic{flex-basis:100%} .step-pic svg{width:100%; height:140px} }
+
+  /* ===== Station C sort ===== */
+  .chip-bank{display:flex; flex-wrap:wrap; gap:8px; min-height:54px; padding:12px; background:#f4f1ea;
+    border-radius:10px; margin-bottom:12px}
+  .chip{font-size:.92rem; padding:8px 13px; border-radius:999px; border:1.5px solid var(--ink);
+    background:#fffdf8; cursor:grab; user-select:none; font-family:"Atkinson Hyperlegible",sans-serif}
+  .chip.selected{background:var(--sun-soft); border-color:var(--sun); box-shadow:0 0 0 2px var(--sun)}
+  .chip.right{background:var(--good-soft); border-color:var(--good)}
+  .chip.wrong{background:var(--bad-soft); border-color:var(--bad)}
+  .zones{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+  .zone{border:2px dashed var(--line); border-radius:12px; min-height:140px; padding:10px; background:var(--card)}
+  .zone h4{margin:0 0 8px; font-size:.95rem; text-align:center; color:#5b6478;
+    font-family:"Space Grotesk",sans-serif; text-transform:uppercase; letter-spacing:.08em}
+  .zone.hot{border-color:var(--sun); background:var(--sun-soft)}
+  .zone .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .sort-actions{display:flex; gap:10px; align-items:center; margin-top:14px; flex-wrap:wrap}
+  #sort-score{font-family:"Space Grotesk",sans-serif; font-weight:700}
+
+  .check{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input{width:20px; height:20px; margin-top:3px; accent-color:var(--teal)}
+
+  .voice-steps{counter-reset:vs; list-style:none; padding:0; margin:10px 0 0}
+  .voice-steps li{counter-increment:vs; position:relative; padding:0 0 12px 44px}
+  .voice-steps li::before{content:counter(vs); position:absolute; left:0; top:0; width:28px; height:28px;
+    border-radius:50%; background:var(--evidence); color:#fff; font-family:"Space Grotesk",sans-serif;
+    font-weight:700; font-size:.85rem; display:flex; align-items:center; justify-content:center}
+
+  .why{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:.95rem}
+  .why b{color:var(--teal)}
+  .reveal-btn{margin-top:14px; width:100%; text-align:left; font-size:.9rem}
+  .reveal-btn:disabled{opacity:.55; cursor:not-allowed}
+  .reveal-btn:not(:disabled){background:var(--teal-soft); border:1.5px solid var(--teal); color:var(--teal)}
+  footer{margin-top:50px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.stationnav{position:static} .sim-shell{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Mission Log · Week 2</p>
+    <h1>Spinning Earth — day and night</h1>
+    <p>Our shadow evidence goes on trial. Is the Sun moving… or are <strong>we</strong>?</p>
+  </div>
+</header>
+
+<nav class="stationnav" aria-label="Jump to a section">
+  <a href="#briefing">🚀 Briefing</a>
+  <a href="#fastforward">⏩ Fast-Forward</a>
+  <a href="#stationA">🟠 Station A</a>
+  <a href="#stationB">🟢 Station B</a>
+  <a href="#stationC">🟣 Station C</a>
+  <a href="#plenary">🎙 Plenary</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="card" id="homebase" style="margin-top:24px">
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+      <strong style="font-family:'Space Grotesk',sans-serif">🌏 Home base:</strong>
+      <select id="citysel" style="font-family:inherit; font-size:1rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8">
+        <option value="Brisbane|BNE|27.47" selected>Brisbane</option>
+        <option value="Sydney|SYD|33.87">Sydney</option>
+        <option value="Melbourne|MEL|37.81">Melbourne</option>
+        <option value="Adelaide|ADL|34.93">Adelaide</option>
+        <option value="Perth|PER|31.95">Perth</option>
+        <option value="Hobart|HOB|42.88">Hobart</option>
+        <option value="Canberra|CBR|35.28">Canberra</option>
+        <option value="Darwin|DRW|12.46">Darwin</option>
+        <option value="Cairns|CNS|16.92">Cairns</option>
+        <option value="Auckland|AKL|36.85">Auckland</option>
+        <option value="custom">Somewhere else…</option>
+      </select>
+      <input id="citycustom" type="text" placeholder="Type your city" style="display:none; font-family:inherit; font-size:1rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:8px; background:#fffdf8">
+      <span style="font-size:.85rem; color:#5b6478">Set once — it updates the model steps and the shadow simulator for your location.</span>
+    </div>
+    <p id="customnote" style="display:none; margin:8px 0 0; font-size:.85rem; color:#5b6478"><em>Custom city: the simulator keeps Brisbane’s latitude for shadow lengths — the pattern (shrinking towards September) is the same across Australia and New Zealand.</em></p>
+  </div>
+
+  <!-- ================= MISSION BRIEFING ================= -->
+  <section id="briefing">
+    <div class="sec-head"><span class="tag">Start here</span><h2>Mission Briefing — 5 questions, marks itself</h2></div>
+    <div class="card">
+      <p style="margin-top:0">Answer all five, then press <strong>Check my answers</strong>. Green = locked in your memory. Red = read the fix-up note, then you're ready for today.</p>
+
+      <div class="mcq" data-answer="b">
+        <p>1. Which planet orbits closer to the Sun?</p>
+        <label class="opt"><input type="radio" name="q1" value="a">Earth</label>
+        <label class="opt"><input type="radio" name="q1" value="b">Venus</label>
+        <label class="opt"><input type="radio" name="q1" value="c">Mars</label>
+        <p class="fb">Order from the Sun: Mercury, <strong>Venus</strong>, Earth, Mars… (check your mnemonic!)</p>
+      </div>
+
+      <div class="mcq" data-answer="c">
+        <p>2. What keeps a planet in orbit around the Sun?</p>
+        <label class="opt"><input type="radio" name="q2" value="a">The Sun's heat pushing it around</label>
+        <label class="opt"><input type="radio" name="q2" value="b">Magnets in the planet's core</label>
+        <label class="opt"><input type="radio" name="q2" value="c">A balance between gravity pulling inwards and the planet's motion carrying it forward</label>
+        <p class="fb">It's the Goldilocks balance from the Orbit Lab: <strong>gravity</strong> pulls inwards, <strong>motion</strong> carries forward.</p>
+      </div>
+
+      <div class="mcq" data-answer="a">
+        <p>3. In the Orbit Lab, what happened the instant gravity was switched off?</p>
+        <label class="opt"><input type="radio" name="q3" value="a">Earth flew off in a straight line</label>
+        <label class="opt"><input type="radio" name="q3" value="b">Earth spiralled slowly outwards</label>
+        <label class="opt"><input type="radio" name="q3" value="c">Earth stopped dead</label>
+        <p class="fb">A <strong>straight line</strong> — objects keep moving straight unless a force bends their path. That's why the orbit needs gravity.</p>
+      </div>
+
+      <div class="mcq" data-answer="b">
+        <p>4. You launch Earth far too slowly. What happens?</p>
+        <label class="opt"><input type="radio" name="q4" value="a">It escapes into deep space</label>
+        <label class="opt"><input type="radio" name="q4" value="b">Gravity wins — it falls into the Sun</label>
+        <label class="opt"><input type="radio" name="q4" value="c">It orbits, just more slowly</label>
+        <p class="fb">Too slow = <strong>gravity wins</strong>. Too fast = motion wins and Earth escapes. Just right = orbit.</p>
+      </div>
+
+      <div class="mcq" data-answer="c">
+        <p>5. About how fast is the real Earth travelling around the Sun right now?</p>
+        <label class="opt"><input type="radio" name="q5" value="a">100 km/h — highway speed</label>
+        <label class="opt"><input type="radio" name="q5" value="b">900 km/h — jet plane speed</label>
+        <label class="opt"><input type="radio" name="q5" value="c">About 107,000 km/h — Brisbane to Sydney in under half a minute</label>
+        <p class="fb">≈ <strong>107,000 km/h</strong>. You are on the fastest ride you will ever take, right now.</p>
+      </div>
+
+      <button class="btn btn-go" id="quiz-check">✔ Check my answers</button>
+      <p class="scoreline" id="quiz-score"></p>
+      <button class="btn btn-quiet" id="fixup-jump">🔧 Take me to my first fix-up note</button>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your score → <strong>OneNote → Science → Week 2</strong>. These screenshots build your growth record across the term.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= SHADOW FAST-FORWARD ================= -->
+  <section id="fastforward">
+    <div class="sec-head"><span class="tag">Whole class</span><h2>The Shadow Files: Fast-Forward ⏩</h2></div>
+    <div class="notice"><p><strong>Why this matters:</strong> your Monday 1 pm photo mission runs for ten weeks — that's a long time to wait to see a pattern. This simulator fast-forwards the whole term so you know what to look for. <strong>It's a prediction, not a result</strong> — your real photos are the evidence that tests it.</p></div>
+
+    <div class="sim-shell">
+      <canvas id="shadowsim" width="760" height="430" aria-label="Simulation of a one-metre stick and its 1 pm shadow each Monday of the term"></canvas>
+    </div>
+    <div class="sim-controls">
+      <label for="weekslider">Week <output id="weekout">1</output> of 10</label>
+      <input type="range" id="weekslider" min="1" max="10" value="1" step="1">
+      <button class="btn btn-go" id="playweeks">▶ Play the term</button>
+      <p class="sim-readout" id="simreadout"></p>
+    </div>
+
+    <div class="card">
+      <label class="q" for="hunch">🕵️ Detective's hunch — the shadow shrinks week after week, at the SAME time of day, with the SAME stick. Something must be slowly changing. What's your theory?</label>
+      <textarea id="hunch" placeholder="I think the 1 pm shadow is getting shorter because…"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your hunch → <strong>OneNote → Science → Week 2</strong>. No wrong answers — detectives record every theory.</p></div>
+      <div class="sealed"><span style="font-size:1.2rem">🔒</span><p style="margin:0"><strong>Case file sealed until Week 3.</strong> The answer involves something Earth is doing that we haven't studied yet. Bring your hunch to next week's lesson — the seal comes off then.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= STATION A ================= -->
+  <section id="stationA">
+    <div class="sec-head stA"><span class="tag">Station A · 20 min</span><h2>Rotation or Revolution? (teacher-led)</h2></div>
+    <details class="teachercard">
+      <summary>👩‍🏫 Station leader card — read this FIRST if you are running this station (teacher, aide or student leader) — or if your group is working without a leader</summary>
+      <div class="inner">
+        <p><strong>Run sheet (20 minutes):</strong></p>
+        <ol>
+          <li><strong>Demonstrate first (5 min).</strong> Hold the globe. Say: <em>"Watch carefully — I'm going to move it two different ways."</em> First spin it on its axis (that's <strong>rotation</strong> — moving around itself). Then carry it in a circle around the torch (that's <strong>revolution</strong> — travelling around something else). Repeat both while the group says the words with you.</li>
+          <li><strong>Anchor the definitions (2 min).</strong> Rotation = spinning on your own axis, like a top. Revolution = travelling around another object, like a lap of an oval. The test question: <em>"Is it moving around itself, or around something else?"</em></li>
+          <li><strong>Animations (8 min).</strong> Work through the six cards together. Before anyone clicks, ask one person to justify their choice out loud using the test question.</li>
+          <li><strong>Big questions (5 min).</strong> Everyone writes their own answers — discuss first, write second.</li>
+        </ol>
+        <p><strong>Targeted questions to ask (students: use these to check yourself later):</strong></p>
+        <ul>
+          <li>"Is it moving around <em>itself</em> or around <em>something else</em>?"</li>
+          <li>"Earth does both at once. How long does one rotation take? One revolution?"</li>
+          <li>"Which one explains our shadow data from last week — rotation or revolution? How do you know?"</li>
+          <li>"Why do we say the Sun <em>rises</em> if the Sun isn't actually moving across the sky?"</li>
+          <li>"If Earth rotated twice as fast, how long would a day be?"</li>
+          <li>Stretch: "The Moon rotates exactly once every time it revolves once around Earth. What would that mean for the side of the Moon we see?"</li>
+        </ul>
+        <p><strong>Listen for these misconceptions:</strong> "the Sun goes around the Earth" (our shadow data shows steady, predictable sweeping — caused by our turning); "rotation and revolution are the same thing" (return to the test question); "Earth's spin takes a year" (24 hours for a spin; 365¼ days for the lap).</p>
+      </div>
+    </details>
+
+    <div class="card">
+      <h3>What to do at this station</h3>
+      <p style="margin:0 0 8px"><strong>1.</strong> Watch the globe-and-torch demonstration and answer the leader's questions.&nbsp; <strong>2.</strong> As a group, work through the six animations below — for each one, decide: is it <em>rotating</em> (spinning on its own axis), <em>revolving</em> (travelling around something else), or <em>both</em>? Click your answer and the card will tell you. &nbsp;<strong>3.</strong> Finish by answering the two big questions at the bottom.</p>
+      <p style="margin:0; font-size:.92rem; color:#5b6478"><em>The golden question to ask yourself every time: is it moving around <strong>itself</strong>, or around <strong>something else</strong>?</em></p>
+    </div>
+
+    <div class="anim-grid">
+      <div class="anim-card" data-answer="rot">
+        <div class="anim-stage"><svg class="spinner" viewBox="0 0 60 60" aria-label="spinning top"><polygon points="30,55 14,22 46,22" fill="#b3541e"/><circle cx="30" cy="16" r="9" fill="#e8930c"/><rect x="28" y="2" width="4" height="8" rx="2" fill="#1b2a4a"/></svg></div>
+        <h4>A spinning top</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="anim-card" data-answer="rev">
+        <div class="anim-stage">
+          <div class="orbit-wrap">
+            <div class="centre-body" style="width:34px;height:34px;background:radial-gradient(circle at 35% 35%, #9fd8ff, #1565c0)"></div>
+            <div class="orbit-ring2"><div class="orbit-body" style="background:#bdb7aa"></div></div>
+          </div>
+        </div>
+        <h4>The Moon travelling around Earth each month</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="anim-card" data-answer="rot">
+        <div class="anim-stage"><svg class="spinner" viewBox="0 0 60 60" aria-label="sausage on a rotisserie skewer"><rect x="28" y="2" width="4" height="56" fill="#8a8276"/><ellipse cx="30" cy="30" rx="10" ry="22" fill="#b3541e"/><ellipse cx="30" cy="30" rx="4" ry="22" fill="#d98a52"/></svg></div>
+        <h4>A sausage turning on a rotisserie skewer</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="anim-card" data-answer="rev">
+        <div class="anim-stage">
+          <div class="orbit-wrap">
+            <div class="centre-body" style="width:46px;height:30px;background:#cfd8b8;border-radius:8px"></div>
+            <div class="orbit-ring2"><div class="orbit-body" style="background:#c0392b;border-radius:4px;width:20px;height:12px;margin-left:-10px;top:-6px"></div></div>
+          </div>
+        </div>
+        <h4>A racing car doing laps of a track</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="anim-card" data-answer="both">
+        <div class="anim-stage">
+          <div class="orbit-wrap">
+            <div class="centre-body" style="width:38px;height:38px;background:radial-gradient(circle at 35% 35%, #ffd479, #e8930c);box-shadow:0 0 14px rgba(232,147,12,.6)"></div>
+            <div class="orbit-ring2"><div class="orbit-body spin-too" style="background:conic-gradient(#1565c0 0 50%, #2f9e44 50% 100%)"></div></div>
+          </div>
+        </div>
+        <h4>Planet Earth, right now</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="anim-card" data-answer="rot">
+        <div class="anim-stage"><svg class="spinner" viewBox="0 0 60 60" aria-label="spinning office chair seen from above"><circle cx="30" cy="30" r="18" fill="#1b2a4a"/><rect x="27" y="6" width="6" height="14" rx="3" fill="#5b6478"/><rect x="27" y="40" width="6" height="14" rx="3" fill="#5b6478"/><rect x="6" y="27" width="14" height="6" rx="3" fill="#5b6478"/><rect x="40" y="27" width="14" height="6" rx="3" fill="#5b6478"/></svg></div>
+        <h4>An office chair spinning (view from above)</h4>
+        <div class="ans-btns"><button data-pick="rot">Rotation</button><button data-pick="rev">Revolution</button><button data-pick="both">Both</button></div>
+        <p class="fb"></p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <label class="q" for="bigA1">Big question 1 — Earth does both. Which movement gives us day and night, and which gives us a year? <span class="hint">Use about 24 hours and about 365 days in your answer.</span></label>
+      <textarea id="bigA1"></textarea>
+      <label class="q" for="bigA2">Big question 2 — If Earth suddenly stopped rotating (but kept revolving), what would happen to day and night where you live?</label>
+      <textarea id="bigA2"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your six green cards and your two big answers → <strong>OneNote → Science → Week 2</strong>.</p></div>
+    </div>
+
+  </section>
+
+  <!-- ================= STATION B ================= -->
+  <section id="stationB">
+    <div class="sec-head stB"><span class="tag">Station B · 20 min</span><h2>Build the working day/night model</h2></div>
+    <div class="card">
+      <h3>What to do at this station</h3>
+      <p style="margin:0">In your trio, follow the steps below to build a model that shows <strong>why <span class="homecity">Brisbane</span> has daytime while <span class="awaycity">London</span> is asleep</strong>. Then rehearse your 30-second voice note — you'll record it at the plenary. Tick each step's check before moving on.</p>
+    </div>
+
+    <div class="card">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="torch, globe and sticker dots laid on a table">
+          <rect x="0" y="86" width="150" height="24" fill="#e0d8c6"/>
+          <rect x="12" y="62" width="40" height="16" rx="4" fill="#1b2a4a"/><polygon points="52,60 70,52 70,88 52,80" fill="#f5d27a"/>
+          <circle cx="100" cy="64" r="22" fill="#3f7cc4"/><path d="M88 56 q8 -6 16 0 q6 6 14 2" stroke="#2f9e44" stroke-width="5" fill="none"/>
+          <circle cx="134" cy="78" r="5" fill="#c0392b"/><circle cx="134" cy="92" r="5" fill="#e8930c"/>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>Gather your kit:</strong> one torch (or lamp), one globe (or ball on a skewer), two small sticker dots, and a stack of 2–3 books.</p>
+          <p class="check-it">✅ Check: you have all four things before you start.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="torch resting on books, level with the middle of the globe">
+          <rect x="0" y="86" width="150" height="24" fill="#e0d8c6"/>
+          <rect x="8" y="74" width="44" height="6" fill="#b3541e"/><rect x="10" y="66" width="40" height="6" fill="#0e7c7b"/>
+          <rect x="14" y="50" width="34" height="14" rx="4" fill="#1b2a4a"/><polygon points="48,48 64,42 64,72 48,66" fill="#f5d27a"/>
+          <circle cx="106" cy="58" r="26" fill="#3f7cc4"/>
+          <line x1="64" y1="57" x2="80" y2="57" stroke="#e8930c" stroke-width="2" stroke-dasharray="4 3"/>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>Set up your "Sun":</strong> rest the torch on the books about 30 cm from the globe, so the beam points at the <em>middle</em> of the globe — not up at the top or down at the base.</p>
+          <p class="check-it">✅ Check: torch is level with the globe's equator and doesn't need holding.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="globe with sticker dots marking Brisbane and London">
+          <circle cx="75" cy="55" r="34" fill="#3f7cc4"/>
+          <path d="M84 66 q8 -4 12 4 q-4 8 -12 4 z" fill="#2f9e44"/>
+          <path d="M58 36 q10 -8 20 -2 q-6 8 -20 2 z" fill="#2f9e44"/>
+          <circle cx="93" cy="70" r="5" fill="#c0392b"/><text x="103" y="76" font-size="11" fill="#1b2a4a" font-family="Arial" class="svg-home">BNE</text>
+          <circle cx="63" cy="36" r="5" fill="#e8930c"/><text x="20" y="38" font-size="11" fill="#1b2a4a" font-family="Arial" class="svg-away">LDN</text>
+          <line x1="75" y1="14" x2="75" y2="96" stroke="#1b2a4a" stroke-width="2" stroke-dasharray="5 4"/>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>Mark your cities:</strong> put one sticker on Brisbane (east coast of Australia) and one on London (United Kingdom). On a real globe, find them first — ask the group if unsure. They're nearly on opposite sides of the world.</p>
+          <p class="check-it">✅ Check: both stickers on, both names said out loud.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="lit half of the globe is day, dark half is night">
+          <rect x="0" y="0" width="150" height="110" fill="#1b2a4a"/>
+          <polygon points="6,40 30,30 30,80 6,70" fill="#f5d27a" opacity=".8"/>
+          <rect x="2" y="44" width="22" height="12" rx="4" fill="#0d1530" stroke="#5b6478"/>
+          <circle cx="92" cy="55" r="32" fill="#13203f"/>
+          <path d="M92 23 a32 32 0 0 0 0 64 z" fill="#7db9e8"/>
+          <text x="56" y="100" font-size="11" fill="#f5f2ea" font-family="Arial">day side  ·  night side</text>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>Lights off, torch on.</strong> Look carefully: exactly <em>half</em> the globe is lit. The lit half is having <strong>daytime</strong>; the dark half is having <strong>night</strong> — right now, at the same moment.</p>
+          <p class="check-it">✅ Check: each person points to the day side and the night side.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="turn the globe slowly anticlockwise viewed from above the North Pole">
+          <circle cx="75" cy="55" r="34" fill="#3f7cc4"/>
+          <path d="M84 66 q8 -4 12 4 q-4 8 -12 4 z" fill="#2f9e44"/>
+          <circle cx="93" cy="70" r="5" fill="#c0392b"/>
+          <path d="M40 22 a44 44 0 0 1 70 0" fill="none" stroke="#e8930c" stroke-width="4"/>
+          <polygon points="110,22 100,12 100,32" fill="#e8930c"/>
+          <text x="34" y="104" font-size="11" fill="#1b2a4a" font-family="Arial">turn slowly: west → east</text>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>Make the Earth turn:</strong> rotate the globe slowly from <strong>west to east</strong> (anticlockwise when you look down on the North Pole). Watch your <span class="homecity">Brisbane</span> sticker travel from darkness into light — that exact edge moment is <strong>sunrise</strong>. Keep turning: midday is when <span class="homecity">Brisbane</span> faces the torch square-on; sunset is leaving the light; midnight is facing directly away.</p>
+          <p class="check-it">✅ Check: your trio can show sunrise, midday, sunset and midnight in <span class="homecity">Brisbane</span> on request.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">6</div>
+        <div class="step-pic"><svg viewBox="0 0 150 110" role="img" aria-label="home city in the light while the far city is in the dark">
+          <rect x="0" y="0" width="150" height="110" fill="#1b2a4a"/>
+          <circle cx="75" cy="55" r="34" fill="#13203f"/>
+          <path d="M75 21 a34 34 0 0 1 0 68 z" fill="#7db9e8"/>
+          <circle cx="93" cy="62" r="5" fill="#c0392b"/><text x="102" y="67" font-size="10" fill="#f5f2ea" font-family="Arial" class="svg-home" data-suffix=" ☀">BNE ☀</text>
+          <circle cx="58" cy="38" r="5" fill="#e8930c"/><text x="14" y="42" font-size="10" fill="#f5f2ea" font-family="Arial" class="svg-away" data-suffix=" 🌙">LDN 🌙</text>
+        </svg></div>
+        <div class="step-text">
+          <p><strong>The detective question:</strong> position the globe so your <strong>Brisbane sticker is in full light</strong>. Now find London. Light or dark? That's why a 7 pm video call to London reaches someone at breakfast — same planet, opposite sides of the turn.</p>
+          <p class="check-it">✅ Check: 📷 photograph your model showing <span class="homecity">Brisbane</span> lit and <span class="awaycity">London</span> dark → OneNote → Science → Week 2.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Your 30-second voice note — write it yourselves first</h3>
+      <p>As a trio, discuss what a perfect explanation must include. Hints: the words <strong>rotate</strong>, <strong>axis</strong> and <strong>Sun</strong>, plus your two cities. Then draft your own script below (or in your book) while one person turns the globe. You’ll record it at the plenary.</p>
+      <label class="q" for="scriptdraft">Our trio’s draft script:</label>
+      <textarea id="scriptdraft" placeholder="This model shows…"></textarea>
+      <button class="btn btn-quiet reveal-btn" id="scaffold-btn" disabled>🔒 Script scaffold — locked until your trio has drafted its own version above (even a rough one!)</button>
+      <div class="why" id="scaffold-box" hidden><b>Compare with the scaffold</b> — keep anything your draft did better: <em>"This model shows why we have day and night. The torch is the ____. The globe is ____. Earth rotates on its ____ once every ____ hours. The side facing the Sun has ____, and the side facing away has ____. Right now in our model, <span class="homecity">Brisbane</span> is having ____ while <span class="awaycity">London</span> is having ____, because…"</em></div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your draft script → <strong>OneNote → Science → Week 2</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= STATION C ================= -->
+  <section id="stationC">
+    <div class="sec-head stC"><span class="tag">Station C · 20 min</span><h2>The Sorting Office (independent)</h2></div>
+    <div class="card">
+      <h3>What to do at this station</h3>
+      <p style="margin:0"><strong>1.</strong> Sort the eight cards into the right zones — click a card to pick it up, then click the zone it belongs in (or drag it). Press <strong>Check my sort</strong>; fix any red ones and check again. 📸 Screenshot your all-green board. &nbsp;<strong>2.</strong> Then complete the two Shadow Files data questions below. Work quietly — the leader is busy at Station A.</p>
+    </div>
+
+    <div class="card">
+      <h3>Sort: rotation, revolution… or both?</h3>
+      <div class="chip-bank" id="bank" aria-label="cards to sort"></div>
+      <div class="zones">
+        <div class="zone" data-zone="rot"><h4>🌀 Rotation<br><span style="text-transform:none;letter-spacing:0;font-size:.8rem">(spins on its own axis)</span></h4><div class="chips"></div></div>
+        <div class="zone" data-zone="rev"><h4>🛤 Revolution<br><span style="text-transform:none;letter-spacing:0;font-size:.8rem">(travels around something else)</span></h4><div class="chips"></div></div>
+        <div class="zone" data-zone="both"><h4>🌏 Both at once</h4><div class="chips"></div></div>
+      </div>
+      <div class="sort-actions">
+        <button class="btn btn-go" id="sort-check">✔ Check my sort</button>
+        <button class="btn btn-quiet" id="sort-reset">↺ Start again</button>
+        <span id="sort-score"></span>
+      </div>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> when every card is green, screenshot the board → <strong>OneNote → Science → Week 2</strong>.</p></div>
+    </div>
+
+    <div class="card">
+      <h3>The Shadow Files — what is our data telling us?</h3>
+      <label class="q" for="dataC1">Look at your trio's shadow measurements from Week 1. Describe the pattern in one or two sentences. <span class="hint">What happened to the length across the day? Which way did the direction sweep?</span></label>
+      <textarea id="dataC1" placeholder="Our shadows… The direction…"></textarea>
+      <label class="q" for="dataC2">Real detectives check their evidence. Name two things that could have made your measurements slightly wrong, and how you'd fix them next time. <span class="hint">Think: timing, marking the tip, holding the ruler, clouds…</span></label>
+      <textarea id="dataC2" placeholder="1. …  2. …"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot both answers → <strong>OneNote → Science → Week 2</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= PLENARY ================= -->
+  <section id="plenary">
+    <div class="sec-head"><span class="tag">Plenary</span><h2>Close the case — your 30-second voice note</h2></div>
+    <div class="card">
+      <p style="margin-top:0"><strong>The easiest way to record is built right into OneNote — no other app needed:</strong></p>
+      <ol class="voice-steps">
+        <li>Open your <strong>Week 2 page</strong> in OneNote and click where you want the recording to sit.</li>
+        <li>Click <strong>Insert → Audio</strong> (look for the 🎙 microphone). Recording starts immediately.</li>
+        <li>Say your rehearsed model explanation — about 30 seconds. Speak clearly, not fast.</li>
+        <li>Click <strong>Stop</strong>. The voice note saves itself onto the page — done. Press play to check it.</li>
+      </ol>
+      <p style="font-size:.92rem; color:#5b6478"><em>Recording video of your model instead? That's the only time you need Clipchamp — record with the camera, export, and upload the file to OneNote. For voice only, OneNote's mic is faster every time.</em></p>
+      <label class="q" for="exitw2">And one typed exit ticket — a friend says: "The Sun moves around the Earth — you can see it cross the sky!" Write your evidence-based reply. <span class="hint">Use your shadow data or your model as the evidence.</span></label>
+      <textarea id="exitw2"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Evidence check:</strong> screenshot your reply → <strong>OneNote → Science → Week 2</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= CHECKLIST ================= -->
+  <section>
+    <div class="sec-head"><span class="tag">File the case</span><h2>By the end of today, my OneNote Week 2 page has…</h2></div>
+    <div class="card">
+      <div class="check"><input type="checkbox" id="k1"><label for="k1">💻 my <strong>Mission Briefing score</strong> screenshot</label></div>
+      <div class="check"><input type="checkbox" id="k2"><label for="k2">💻 my <strong>detective's hunch</strong> about the shrinking shadows</label></div>
+      <div class="check"><input type="checkbox" id="k3"><label for="k3">💻 Station A: six green cards + my <strong>two big answers</strong></label></div>
+      <div class="check"><input type="checkbox" id="k4"><label for="k4">📷 Station B: photo of our model with <strong><span class="homecity">Brisbane</span> lit, <span class="awaycity">London</span> dark</strong></label></div>
+      <div class="check"><input type="checkbox" id="k5"><label for="k5">💻 Station C: my <strong>all-green sort</strong> + two data answers</label></div>
+      <div class="check"><input type="checkbox" id="k6"><label for="k6">🎙 my <strong>30-second voice note</strong> (Insert → Audio) + typed exit ticket</label></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Next week:</strong> the seal comes off the shadow case file. Why ARE the Monday shadows shrinking? Hint: it's the same reason winter is ending…</p>
+    <p>Space Detectives · Year 6 Science · Week 2 Station Hub — original, self-contained, works offline.</p>
+  </footer>
+</div>
+
+<script>
+/* ============ Mission briefing quiz ============ */
+(function(){
+  const jump = document.getElementById('fixup-jump');
+  jump.addEventListener('click', () => {
+    const first = document.querySelector('.mcq .fb.show');
+    if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+  document.getElementById('quiz-check').addEventListener('click', () => {
+    let score = 0, answered = 0;
+    document.querySelectorAll('.mcq').forEach(q => {
+      const correct = q.dataset.answer;
+      const chosen = q.querySelector('input:checked');
+      q.querySelectorAll('.opt').forEach(o => o.classList.remove('right','wrong'));
+      q.querySelector('.fb').classList.remove('show');
+      if (!chosen) return;
+      answered++;
+      const lab = chosen.closest('.opt');
+      if (chosen.value === correct){ score++; lab.classList.add('right'); }
+      else {
+        lab.classList.add('wrong');
+        q.querySelectorAll('input').forEach(i => { if (i.value === correct) i.closest('.opt').classList.add('right'); });
+        q.querySelector('.fb').classList.add('show');
+      }
+    });
+    const out = document.getElementById('quiz-score');
+    out.classList.add('show');
+    const wrong = 5 - score;
+    if (answered < 5){
+      out.textContent = 'Answer all five questions first! (' + answered + '/5 answered)';
+      jump.classList.remove('show');
+    } else if (score === 5){
+      out.textContent = '\uD83D\uDE80 Score: 5/5 \u2014 perfect launch!';
+      jump.classList.remove('show');
+    } else {
+      out.textContent = '\uD83D\uDE80 Score: ' + score + '/5 \u2014 ' + wrong + ' \uD83D\uDD27 fix-up note' + (wrong>1?'s are':' is') +
+        ' waiting in the orange box' + (wrong>1?'es':'') + ' under your red answers. Read ' + (wrong>1?'them':'it') + ', then you\u2019re ready for today.';
+      jump.classList.add('show');
+    }
+  });
+})();
+
+/* ============ Shadow fast-forward ============ */
+(function(){
+  const cv = document.getElementById('shadowsim'), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const slider = document.getElementById('weekslider');
+  const weekout = document.getElementById('weekout');
+  const readout = document.getElementById('simreadout');
+  const playBtn = document.getElementById('playweeks');
+
+  let LAT = 27.47; // southern hemisphere latitude (set by Home base)
+  function altitudeForWeek(w){
+    const N = 194 + (w-1)*7; // day of year, term starts mid-July
+    const dec = 23.44 * Math.sin(2*Math.PI*(284+N)/365);
+    return 90 - Math.abs(-LAT - dec); // degrees above horizon at ~1 pm
+  }
+  const dates = ['13 July','20 July','27 July','3 Aug','10 Aug','17 Aug','24 Aug','31 Aug','7 Sept','14 Sept'];
+
+  const groundY = 250, baseX = 470, stickH = 120;
+  const stars = []; for (let i=0;i<40;i++) stars.push({x:Math.random()*W, y:Math.random()*70, r:Math.random()+0.3});
+
+  function draw(w){
+    const alt = altitudeForWeek(w);
+    const shadowPx = stickH / Math.tan(alt*Math.PI/180);
+    const shadowCm = Math.round(100 / Math.tan(alt*Math.PI/180));
+
+    ctx.clearRect(0,0,W,H);
+    // sky
+    const sky = ctx.createLinearGradient(0,0,0,groundY);
+    sky.addColorStop(0,'#7db9e8'); sky.addColorStop(1,'#cfe6f5');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,groundY);
+    // ground
+    ctx.fillStyle = '#9ec27a'; ctx.fillRect(0,groundY,W,H-groundY-100);
+
+    // sun position: to the north (right side), at the altitude angle from the stick base
+    const sunDist = 240;
+    const sx = baseX + sunDist*Math.cos(alt*Math.PI/180);
+    const sy = groundY - sunDist*Math.sin(alt*Math.PI/180);
+    const sg = ctx.createRadialGradient(sx,sy,4,sx,sy,26);
+    sg.addColorStop(0,'#fff3cf'); sg.addColorStop(0.5,'#f5a623'); sg.addColorStop(1,'rgba(245,166,35,0)');
+    ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(sx,sy,26,0,Math.PI*2); ctx.fill();
+    // altitude angle guide
+    ctx.strokeStyle = 'rgba(27,42,74,.35)'; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(baseX,groundY); ctx.lineTo(sx,sy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(baseX,groundY); ctx.lineTo(baseX+90,groundY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#1b2a4a'; ctx.font = '13px Arial';
+    ctx.fillText(Math.round(alt) + '\u00B0', baseX+58, groundY-10);
+
+    // shadow (points south = left)
+    ctx.fillStyle = 'rgba(27,42,74,.45)';
+    ctx.beginPath();
+    ctx.moveTo(baseX,groundY);
+    ctx.lineTo(baseX - shadowPx, groundY+7);
+    ctx.lineTo(baseX - shadowPx + 8, groundY+11);
+    ctx.lineTo(baseX+5, groundY+6);
+    ctx.closePath(); ctx.fill();
+
+    // stick (1 metre)
+    ctx.strokeStyle = '#6b4a2b'; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(baseX,groundY); ctx.lineTo(baseX,groundY-stickH); ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#1b2a4a'; ctx.font = 'bold 13px Arial';
+    ctx.fillText('1 m stick', baseX+10, groundY-stickH+4);
+    ctx.fillText('Monday ' + dates[w-1] + ' \u00B7 about 1 pm', 16, 24);
+    ctx.font = '12px Arial';
+    ctx.fillText('N \u2192', W-44, groundY-8);
+    ctx.fillText('\u2190 S', 16, groundY-8);
+
+    // photo strip across the bottom
+    const stripY = H-92;
+    ctx.fillStyle = '#0d1530'; ctx.fillRect(0,stripY-8,W,100);
+    ctx.fillStyle = '#f5f2ea'; ctx.font = 'bold 12px Arial';
+    ctx.fillText('\uD83D\uDCF7 The Monday photo strip so far:', 14, stripY+8);
+    const cellW = (W-28)/10;
+    for (let i=1;i<=10;i++){
+      const cx0 = 14+(i-1)*cellW;
+      ctx.strokeStyle = i===w ? '#e8930c' : '#3a4666';
+      ctx.lineWidth = i===w ? 2.5 : 1;
+      ctx.strokeRect(cx0, stripY+14, cellW-6, 58);
+      ctx.lineWidth = 1;
+      if (i<=w){
+        const a2 = altitudeForWeek(i);
+        const sh2 = (stickH/Math.tan(a2*Math.PI/180)) * 0.22;
+        const gx = cx0 + cellW*0.62, gy = stripY+62;
+        ctx.fillStyle = '#9ec27a'; ctx.fillRect(cx0+3, gy, cellW-12, 4);
+        ctx.strokeStyle = '#c9a06a'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(gx,gy-26); ctx.stroke(); ctx.lineWidth = 1;
+        ctx.fillStyle = 'rgba(160,170,200,.8)';
+        ctx.fillRect(gx-sh2, gy, sh2, 3);
+        ctx.fillStyle = '#8d97b5'; ctx.font = '10px Arial';
+        ctx.fillText('W'+i, cx0+5, stripY+26);
+      } else {
+        ctx.fillStyle = '#3a4666'; ctx.font = '10px Arial';
+        ctx.fillText('W'+i+' ?', cx0+5, stripY+26);
+      }
+    }
+
+    weekout.textContent = w;
+    readout.innerHTML = '<b>Week ' + w + ' (' + dates[w-1] + '):</b> the Sun is <b>' + Math.round(alt) +
+      '\u00B0</b> above the horizon at 1 pm, so the 1-metre stick casts a shadow about <b>' + shadowCm +
+      ' cm</b> long' + (w===1 ? '.' : ' \u2014 ' + (altShorter(w)) + ' than Week 1.');
+  }
+  function altShorter(w){
+    const cm1 = Math.round(100/Math.tan(altitudeForWeek(1)*Math.PI/180));
+    const cmw = Math.round(100/Math.tan(altitudeForWeek(w)*Math.PI/180));
+    return (cm1-cmw) + ' cm shorter';
+  }
+
+  slider.addEventListener('input', () => draw(parseInt(slider.value,10)));
+  window.__setLat = l => { LAT = l; draw(parseInt(slider.value,10)); };
+
+  let playing = false, timer = null;
+  playBtn.addEventListener('click', () => {
+    if (playing){ clearInterval(timer); playing = false; playBtn.textContent = '\u25B6 Play the term'; return; }
+    playing = true; playBtn.textContent = '\u23F8 Stop';
+    let w = parseInt(slider.value,10);
+    if (w >= 10) w = 0;
+    timer = setInterval(() => {
+      w++;
+      slider.value = w; draw(w);
+      if (w >= 10){ clearInterval(timer); playing = false; playBtn.textContent = '\u25B6 Play the term'; }
+    }, 900);
+  });
+
+  draw(1);
+})();
+
+/* ============ Station A animations ============ */
+(function(){
+  const names = { rot:'Rotation', rev:'Revolution', both:'Both' };
+  const why = {
+    rot:'it spins around its own axis \u2014 moving around itself.',
+    rev:'it travels around something else \u2014 a lap, not a spin.',
+    both:'it spins on its axis AND travels around something else at the same time \u2014 just like Earth: one spin \u2248 24 hours, one lap of the Sun \u2248 365\u00BC days.'
+  };
+  document.querySelectorAll('.anim-card').forEach(card => {
+    const ans = card.dataset.answer;
+    const fb = card.querySelector('.fb');
+    card.querySelectorAll('.ans-btns button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        card.classList.remove('right','wrong');
+        if (btn.dataset.pick === ans){
+          card.classList.add('right');
+          fb.innerHTML = '\u2705 <strong>' + names[ans] + '</strong> \u2014 ' + why[ans];
+        } else {
+          card.classList.add('wrong');
+          fb.innerHTML = '\u274C Not quite \u2014 ask the golden question: is it moving around <em>itself</em> or around <em>something else</em>? Try again.';
+        }
+      });
+    });
+  });
+})();
+
+/* ============ Station C sort ============ */
+(function(){
+  const items = [
+    { t:'Earth spinning once every 24 hours', a:'rot' },
+    { t:"Earth's year-long journey around the Sun", a:'rev' },
+    { t:'A netball spinning on your finger', a:'rot' },
+    { t:"The Moon's monthly trip around Earth", a:'rev' },
+    { t:'A sausage turning on a rotisserie skewer', a:'rot' },
+    { t:'A racing car doing laps of a track', a:'rev' },
+    { t:'Planet Earth, right now', a:'both' },
+    { t:'The Moon (tricky \u2014 it spins exactly once per trip!)', a:'both' },
+  ];
+  const bank = document.getElementById('bank');
+  let selected = null;
+
+  function makeChip(item){
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'chip';
+    c.textContent = item.t;
+    c.dataset.a = item.a;
+    c.draggable = true;
+    c.addEventListener('click', () => {
+      if (selected === c){ c.classList.remove('selected'); selected = null; return; }
+      if (selected) selected.classList.remove('selected');
+      selected = c; c.classList.add('selected');
+    });
+    c.addEventListener('dragstart', e => { selected = c; e.dataTransfer.setData('text/plain',''); });
+    return c;
+  }
+
+  function place(zoneChips){
+    if (!selected) return;
+    selected.classList.remove('selected','right','wrong');
+    zoneChips.appendChild(selected);
+    selected = null;
+    document.getElementById('sort-score').textContent = '';
+  }
+
+  // shuffle
+  items.sort(() => Math.random() - 0.5).forEach(it => bank.appendChild(makeChip(it)));
+
+  bank.addEventListener('click', e => { if (e.target === bank) place(bank); });
+  bank.addEventListener('dragover', e => e.preventDefault());
+  bank.addEventListener('drop', e => { e.preventDefault(); place(bank); });
+
+  document.querySelectorAll('.zone').forEach(z => {
+    const chips = z.querySelector('.chips');
+    z.addEventListener('click', e => { if (!e.target.classList.contains('chip')) place(chips); });
+    z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('hot'); });
+    z.addEventListener('dragleave', () => z.classList.remove('hot'));
+    z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('hot'); place(chips); });
+  });
+
+  document.getElementById('sort-check').addEventListener('click', () => {
+    let right = 0, placed = 0;
+    document.querySelectorAll('.zone').forEach(z => {
+      const zone = z.dataset.zone;
+      z.querySelectorAll('.chip').forEach(c => {
+        placed++;
+        c.classList.remove('right','wrong');
+        if (c.dataset.a === zone){ c.classList.add('right'); right++; }
+        else c.classList.add('wrong');
+      });
+    });
+    const score = document.getElementById('sort-score');
+    if (placed < items.length){ score.textContent = 'Place all ' + items.length + ' cards first (' + placed + ' placed).'; return; }
+    score.textContent = right === items.length ? '\uD83C\uDFC5 ' + right + '/' + items.length + ' \u2014 all green! Screenshot time.' :
+      right + '/' + items.length + ' \u2014 move the red cards and check again.';
+  });
+
+  document.getElementById('sort-reset').addEventListener('click', () => {
+    document.querySelectorAll('.zone .chip').forEach(c => { c.classList.remove('right','wrong'); bank.appendChild(c); });
+    document.getElementById('sort-score').textContent = '';
+  });
+})();
+
+/* ============ Home base selector ============ */
+(function(){
+  const sel = document.getElementById('citysel');
+  const custom = document.getElementById('citycustom');
+  const note = document.getElementById('customnote');
+  function apply(name, abbrev, lat){
+    document.querySelectorAll('.homecity').forEach(s => s.textContent = name);
+    document.querySelectorAll('.svg-home').forEach(t => t.textContent = abbrev + (t.dataset.suffix || ''));
+    if (window.__setLat) window.__setLat(lat);
+  }
+  sel.addEventListener('change', () => {
+    if (sel.value === 'custom'){
+      custom.style.display = 'inline-block'; note.style.display = 'block';
+      custom.focus();
+      const name = custom.value.trim() || 'My city';
+      apply(name, name.slice(0,3).toUpperCase(), 27.47);
+      return;
+    }
+    custom.style.display = 'none'; note.style.display = 'none';
+    const [name, abbrev, lat] = sel.value.split('|');
+    apply(name, abbrev, parseFloat(lat));
+  });
+  custom.addEventListener('input', () => {
+    const name = custom.value.trim() || 'My city';
+    apply(name, name.slice(0,3).toUpperCase(), 27.47);
+  });
+})();
+
+/* ============ Station B scaffold lock ============ */
+(function(){
+  const draft = document.getElementById('scriptdraft');
+  const btn = document.getElementById('scaffold-btn');
+  const box = document.getElementById('scaffold-box');
+  draft.addEventListener('input', () => {
+    const ready = draft.value.trim().length >= 20;
+    btn.disabled = !ready;
+    btn.textContent = ready ? '\uD83D\uDD13 Reveal the scaffold to compare with your draft'
+      : '\uD83D\uDD12 Script scaffold \u2014 locked until your trio has drafted its own version above (even a rough one!)';
+  });
+  btn.addEventListener('click', () => { box.hidden = false; btn.remove(); });
+})();
+</script>
+</body>
+</html>

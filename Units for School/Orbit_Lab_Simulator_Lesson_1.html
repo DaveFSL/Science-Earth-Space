@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit Lab — Can you keep Earth in orbit? | Space Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a4a; --paper:#fbf9f4; --card:#ffffff;
+    --sun:#e8930c; --sun-soft:#fdeed3;
+    --teal:#0e7c7b; --teal-soft:#e2f2f1;
+    --line:#d8d2c4;
+    --evidence:#7c3aed; --evidence-soft:#f1e9fe;
+    --bad:#c0392b; --good:#1e8e3e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible", Arial, sans-serif; font-size:17px; line-height:1.6}
+  h1,h2,h3{font-family:"Space Grotesk", Arial, sans-serif; line-height:1.2}
+  a{color:var(--teal)}
+  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+  .wrap{max-width:920px; margin:0 auto; padding:0 20px 80px}
+
+  header{background:var(--ink); color:#f5f2ea; padding:30px 20px 36px; border-bottom:6px solid var(--sun)}
+  .hero{max-width:920px; margin:0 auto}
+  .eyebrow{font-family:"Space Grotesk",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.78rem; color:var(--sun); margin:0 0 8px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.3rem); margin:0 0 8px}
+  .hero p{margin:0; color:#d8d4c8}
+
+  .mission{background:var(--sun-soft); border-left:5px solid var(--sun); border-radius:0 10px 10px 0;
+    padding:14px 18px; margin:24px 0 18px}
+  .mission p{margin:0}
+
+  /* ---- sim layout ---- */
+  .sim-grid{display:grid; grid-template-columns:1fr 280px; gap:16px; align-items:start}
+  @media (max-width:760px){.sim-grid{grid-template-columns:1fr}}
+
+  .stage{background:#0d1530; border-radius:12px; position:relative; overflow:hidden;
+    box-shadow:0 4px 14px rgba(13,21,48,.35)}
+  canvas{display:block; width:100%; height:auto}
+  .status{
+    position:absolute; top:12px; left:12px; right:12px; pointer-events:none;
+    font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:1rem;
+    color:#f5f2ea; text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+  .status .big{font-size:1.15rem}
+  .status .sub{font-weight:400; font-family:"Atkinson Hyperlegible",sans-serif; font-size:.9rem; opacity:.85}
+
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .panel h2{font-size:1.05rem; margin:0 0 12px}
+  .ctrl{margin-bottom:16px}
+  .ctrl label{display:flex; justify-content:space-between; font-weight:700; font-size:.95rem; margin-bottom:4px}
+  .ctrl label output{font-family:"Space Grotesk",sans-serif; color:var(--teal)}
+  input[type=range]{width:100%; accent-color:var(--sun)}
+  .btns{display:flex; flex-wrap:wrap; gap:8px}
+  .btn{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.92rem;
+    border:none; border-radius:8px; padding:10px 14px; cursor:pointer}
+  .btn-launch{background:var(--teal); color:#fff}
+  .btn-launch:hover{background:#0a5e5d}
+  .btn-snap{background:var(--bad); color:#fff}
+  .btn-snap:hover{background:#992d22}
+  .btn-quiet{background:#e9e4d8; color:var(--ink)}
+  .btn-quiet:hover{background:#ddd6c5}
+  .readout{font-size:.9rem; color:#5b6478; border-top:1px dashed var(--line); padding-top:10px; margin-top:4px}
+  .readout b{color:var(--ink)}
+  .readout .cmp{display:block; font-size:.82rem; color:var(--teal); font-style:italic; margin:1px 0 7px}
+
+  /* ---- challenges ---- */
+  section{margin-top:40px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:3px solid var(--ink); padding-bottom:6px; margin-bottom:18px}
+  .sec-head .tag{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.12em;
+    background:var(--ink); color:var(--paper); padding:3px 10px; border-radius:4px; text-transform:uppercase; white-space:nowrap}
+  .sec-head h2{margin:0; font-size:1.3rem}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:16px}
+  .chal-num{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;
+    border-radius:50%; background:var(--ink); color:var(--paper); font-family:"Space Grotesk",sans-serif;
+    font-weight:700; margin-right:10px; flex:0 0 auto}
+  .card h3{margin:0 0 12px; display:flex; align-items:center; font-size:1.08rem}
+  textarea{width:100%; min-height:80px; resize:vertical; border:1.5px solid var(--line); border-radius:8px;
+    background:#fffdf8; font-family:inherit; font-size:1rem; color:var(--ink); padding:10px 12px}
+  label.q{display:block; font-weight:700; margin:12px 0 6px}
+  label.q .hint{font-weight:400; font-style:italic; color:#5b6478}
+  .evidence{display:flex; gap:12px; align-items:flex-start; background:var(--evidence-soft);
+    border:1.5px dashed var(--evidence); border-radius:10px; padding:12px 16px; margin-top:14px}
+  .evidence .icon{font-size:1.3rem; line-height:1}
+  .evidence p{margin:0; font-size:.93rem}
+  .evidence strong{color:var(--evidence)}
+  .why{background:var(--teal-soft); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:.95rem}
+  .why b{color:var(--teal)}
+  .reveal-btn{margin-top:14px; width:100%; text-align:left; font-size:.9rem}
+  .reveal-btn:disabled{opacity:.55; cursor:not-allowed}
+  .reveal-btn:not(:disabled){background:var(--teal-soft); border:1.5px solid var(--teal); color:var(--teal)}
+
+  footer{margin-top:50px; padding-top:16px; border-top:3px solid var(--ink); font-size:.95rem; color:#5b6478}
+  @media print{.stage,.panel{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Space Detectives · Orbit Lab · Week 1</p>
+    <h1>Can you keep Earth in orbit?</h1>
+    <p>You control the two forces that rule the solar system: <strong>gravity</strong> and <strong>motion</strong>. Get the balance right… or lose a planet.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="mission">
+    <p><strong>Your mission:</strong> complete the three challenges below, in order. Each one ends with a 📸 evidence checkpoint — screenshot your answer and upload it to <strong>OneNote → Science → Week 1</strong>. Remember: this page doesn't save your typing, so screenshot before you close it!</p>
+  </div>
+
+  <!-- ============ SIMULATOR ============ -->
+  <div class="sim-grid">
+    <div class="stage">
+      <canvas id="sim" width="640" height="520" aria-label="Orbit simulation: Earth moving around the Sun"></canvas>
+      <div class="status">
+        <div class="big" id="status-main">Press LAUNCH to begin</div>
+        <div class="sub" id="status-sub">Set your sliders, then launch Earth.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Mission control</h2>
+      <div class="ctrl">
+        <label for="gravity">Sun's gravity <output id="gravity-out">50</output></label>
+        <input type="range" id="gravity" min="0" max="100" value="50">
+      </div>
+      <div class="ctrl">
+        <label for="speed">Launch speed <output id="speed-out">50</output></label>
+        <input type="range" id="speed" min="0" max="100" value="50">
+      </div>
+      <div class="btns">
+        <button class="btn btn-launch" id="launch">🚀 Launch</button>
+        <button class="btn btn-snap" id="snap" title="Turns the Sun's gravity off while Earth is moving">✂️ Gravity off!</button>
+        <button class="btn btn-quiet" id="pause">⏸ Pause</button>
+        <button class="btn btn-quiet" id="reset">↺ Reset</button>
+      </div>
+      <div class="readout">
+        <p style="margin:8px 0 0">Laps completed: <b id="laps">0</b></p>
+        <p style="margin:7px 0 0">Distance from Sun: <b id="dist">—</b>
+        <span class="cmp" id="dist-cmp">launch Earth to see</span></p>
+        <p style="margin:0">Speed: <b id="vel">—</b>
+        <span class="cmp" id="vel-cmp">launch Earth to see</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CHALLENGES ============ -->
+  <section>
+    <div class="sec-head"><span class="tag">Challenges</span><h2>Three cases to crack</h2></div>
+
+    <div class="card">
+      <h3><span class="chal-num">1</span> The perfect orbit</h3>
+      <p>Find a combination of <strong>gravity</strong> and <strong>launch speed</strong> that keeps Earth in a steady orbit for at least <strong>3 laps</strong> — no crashing, no escaping.</p>
+      <label class="q" for="c1a">My winning combination was gravity ____ and speed ____. If I made the speed much HIGHER without changing gravity, Earth would… <span class="hint">(test it!)</span></label>
+      <textarea id="c1a"></textarea>
+      <label class="q" for="c1b">If I made the speed much LOWER, Earth would…</label>
+      <textarea id="c1b"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Checkpoint 1:</strong> screenshot this challenge with your lap counter showing 3+ laps in the simulator → <strong>OneNote → Science → Week 1</strong>.</p></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chal-num">2</span> Snap the string</h3>
+      <p><strong>Predict first, then test.</strong> Get Earth into a steady orbit. Before you touch anything — write your prediction. <em>Then</em> press <strong>✂️ Gravity off!</strong> and watch closely.</p>
+      <label class="q" for="c2a">My prediction: when gravity turns off, Earth will… <span class="hint">(spiral outwards? fly straight? keep circling? stop?)</span></label>
+      <textarea id="c2a"></textarea>
+      <label class="q" for="c2b">What actually happened — and how is this like letting go of a ball on a string?</label>
+      <textarea id="c2b"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Checkpoint 2:</strong> screenshot your prediction AND your result (the trail in the simulator shows the path — capture it before resetting) → <strong>OneNote</strong>.</p></div>
+      <button class="btn btn-quiet reveal-btn" id="reveal-note" disabled>🔒 Detective's note — locked until you've written your prediction AND your result</button>
+      <div class="why" id="det-note" hidden><b>Detective's note:</b> most people predict a spiral. The straight line surprises almost everyone — and it's exactly what Isaac Newton worked out: objects travel in straight lines unless a force pulls them off course. The orbit only exists <em>because</em> gravity keeps bending Earth's straight-line motion into a circle.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chal-num">3</span> The Goldilocks problem</h3>
+      <p>Set gravity to <strong>50</strong> and leave it there. Now experiment with <strong>launch speed only</strong>: find the zone that's <em>just right</em> — roughly the lowest speed and the highest speed that still give you a full lap without crashing or escaping.</p>
+      <label class="q" for="c3a">My "just right" speed zone at gravity 50 was from about ____ to about ____.</label>
+      <textarea id="c3a" style="min-height:55px"></textarea>
+      <label class="q" for="c3b">Finish the explanation like a scientist: "Planets stay in orbit because of a balance between two things: ____ pulling them inwards, and their own ____ carrying them forward. If the pull wins, the planet… If the motion wins, the planet…"</label>
+      <textarea id="c3b"></textarea>
+      <div class="evidence"><span class="icon">📸</span><p><strong>Checkpoint 3:</strong> screenshot this challenge → <strong>OneNote</strong>. This sentence is gold for your assessment later — you've just explained what keeps the real solar system together.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Real-world connection:</strong> the real Earth travels at about 107,000 km/h — fast enough that the Sun's gravity bends its path into an orbit instead of pulling it in. NASA does exactly what you just did (with harder maths) every time it launches a spacecraft.</p>
+    <p>Space Detectives · Year 6 Science · Orbit Lab — works in any browser, no internet needed once downloaded.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('sim');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const CX = W/2, CY = H/2;
+  const SUN_R = 26, EARTH_R = 9;
+
+  const gravityEl = document.getElementById('gravity');
+  const speedEl   = document.getElementById('speed');
+  const gravityOut= document.getElementById('gravity-out');
+  const speedOut  = document.getElementById('speed-out');
+  const statusMain= document.getElementById('status-main');
+  const statusSub = document.getElementById('status-sub');
+  const lapsEl = document.getElementById('laps');
+  const distEl = document.getElementById('dist');
+  const velEl  = document.getElementById('vel');
+  const distCmp = document.getElementById('dist-cmp');
+  const velCmp  = document.getElementById('vel-cmp');
+
+  // Real-world scale: start distance (170 screen units) = real Earth\u2013Sun distance (150 million km).
+  // Circular speed at the default sliders \u2248 real Earth's speed (107,000 km/h).
+  const MKM_PER_UNIT = 150 / 170;      // million km per screen unit
+  const KMH_PER_VEL  = 11000;          // km/h per speed unit
+
+  function distComparison(mkm){
+    if (mkm < 40)  return 'closer than Mercury \u2014 getting toasty! \uD83D\uDD25';
+    if (mkm < 85)  return 'about where Mercury orbits';
+    if (mkm < 130) return 'about where Venus orbits';
+    if (mkm < 190) return 'about where the real Earth orbits \uD83C\uDF0F';
+    if (mkm < 330) return 'out near Mars';
+    if (mkm < 700) return 'in the asteroid belt zone';
+    return 'heading for the outer planets!';
+  }
+  function speedComparison(kmh){
+    if (kmh < 100) return 'barely moving \u2014 gravity is going to win\u2026';
+    if (kmh < 1000) return 'about as fast as a passenger jet \u2708\uFE0F';
+    const secs = 750 / kmh * 3600;     // Brisbane \u2192 Sydney is about 750 km
+    if (secs < 95) return 'Brisbane \u2192 Sydney in about ' + Math.round(secs) + ' seconds!';
+    return 'Brisbane \u2192 Sydney in about ' + Math.round(secs / 60) + ' minutes';
+  }
+
+  // stars (fixed random field)
+  const stars = [];
+  for (let i=0;i<90;i++) stars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.3+0.3, a:Math.random()*0.5+0.25});
+
+  const START_R = 170;
+  let earth = null;          // {x,y,vx,vy}
+  let trail = [];
+  let laps = 0, angleAcc = 0, lastAngle = 0;
+  let running = false, paused = false;
+  let outcome = null;        // 'crash' | 'escape' | null
+  let snapped = false;
+
+  function GM(){ return gravityEl.value * 320; }            // 0..32000
+  function launchV(){ return speedEl.value * 0.195; }       // circular orbit at gravity 50 ≈ speed 50
+
+  function reset(){
+    earth = { x: CX + START_R, y: CY, vx: 0, vy: 0 };
+    trail = []; laps = 0; angleAcc = 0; lastAngle = 0;
+    running = false; paused = false; outcome = null; snapped = false;
+    statusMain.textContent = 'Press LAUNCH to begin';
+    statusSub.textContent = 'Set your sliders, then launch Earth.';
+    lapsEl.textContent = '0';
+    document.getElementById('pause').textContent = '⏸ Pause';
+  }
+
+  function launch(){
+    reset();
+    earth.vx = 0; earth.vy = -launchV();   // tangential (upwards)
+    lastAngle = Math.atan2(earth.y - CY, earth.x - CX);
+    running = true;
+    statusMain.textContent = 'Earth launched!';
+    statusSub.textContent = 'Watch the balance of gravity and motion.';
+  }
+
+  function step(){
+    if (!running || paused || outcome) return;
+    // sub-steps for stability
+    for (let s=0; s<3; s++){
+      const dx = CX - earth.x, dy = CY - earth.y;
+      const r2 = dx*dx + dy*dy, r = Math.sqrt(r2);
+      if (GM() > 0 && r > 1){
+        const a = GM() / r2, dt = 1/3;
+        earth.vx += (a * dx / r) * dt;
+        earth.vy += (a * dy / r) * dt;
+      }
+      earth.x += earth.vx / 3;
+      earth.y += earth.vy / 3;
+    }
+    trail.push({x: earth.x, y: earth.y});
+    if (trail.length > 700) trail.shift();
+
+    const dx = earth.x - CX, dy = earth.y - CY;
+    const r = Math.sqrt(dx*dx + dy*dy);
+    const v = Math.sqrt(earth.vx*earth.vx + earth.vy*earth.vy);
+    const mkm = r * MKM_PER_UNIT;
+    const kmh = v * KMH_PER_VEL;
+    distEl.textContent = Math.round(mkm) + ' million km';
+    distCmp.textContent = distComparison(mkm);
+    velEl.textContent = (kmh < 1000 ? Math.round(kmh) : Math.round(kmh/1000)*1000).toLocaleString('en-AU') + ' km/h';
+    velCmp.textContent = speedComparison(kmh);
+
+    // lap counting
+    const ang = Math.atan2(dy, dx);
+    let d = ang - lastAngle;
+    if (d > Math.PI) d -= 2*Math.PI;
+    if (d < -Math.PI) d += 2*Math.PI;
+    angleAcc += d; lastAngle = ang;
+    const newLaps = Math.floor(Math.abs(angleAcc) / (2*Math.PI));
+    if (newLaps !== laps){
+      laps = newLaps; lapsEl.textContent = laps;
+      if (laps >= 3 && !snapped){
+        statusMain.textContent = '🏅 Stable orbit — ' + laps + ' laps!';
+        statusSub.textContent = 'Challenge 1 complete. Screenshot your evidence!';
+      } else if (!snapped) {
+        statusMain.textContent = 'In orbit — lap ' + laps;
+        statusSub.textContent = 'Keep it steady…';
+      }
+    }
+
+    // outcomes
+    if (r < SUN_R + EARTH_R){
+      outcome = 'crash'; running = false;
+      statusMain.textContent = '💥 Crashed into the Sun!';
+      statusSub.textContent = 'Gravity won — Earth\u2019s motion was too slow to keep missing the Sun. Try a higher launch speed.';
+    } else if (r > Math.max(W,H) * 0.95){
+      outcome = 'escape'; running = false;
+      statusMain.textContent = snapped ? '📏 Straight line — Earth escaped!' : '🌌 Earth escaped into deep space!';
+      statusSub.textContent = snapped
+        ? 'With no gravity, nothing bends Earth\u2019s path. Objects move in straight lines unless a force pulls them.'
+        : 'Motion won — Earth was moving too fast for gravity to bend its path into an orbit. Try a lower speed or stronger gravity.';
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // stars
+    for (const st of stars){
+      ctx.globalAlpha = st.a;
+      ctx.fillStyle = '#cfd8ea';
+      ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // trail
+    if (trail.length > 1){
+      ctx.strokeStyle = 'rgba(143, 208, 214, 0.65)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(trail[0].x, trail[0].y);
+      for (let i=1;i<trail.length;i++) ctx.lineTo(trail[i].x, trail[i].y);
+      ctx.stroke();
+    }
+
+    // sun (dim if gravity off)
+    const g = GM() > 0;
+    const grad = ctx.createRadialGradient(CX-6, CY-6, 4, CX, CY, SUN_R+10);
+    grad.addColorStop(0, g ? '#ffe9b8' : '#8a8276');
+    grad.addColorStop(0.6, g ? '#f5a623' : '#6f685e');
+    grad.addColorStop(1, g ? 'rgba(232,147,12,0.15)' : 'rgba(110,104,94,0.15)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(CX, CY, SUN_R+10, 0, Math.PI*2); ctx.fill();
+
+    // earth
+    if (earth){
+      const eg = ctx.createRadialGradient(earth.x-3, earth.y-3, 1, earth.x, earth.y, EARTH_R);
+      eg.addColorStop(0, '#9fd8ff'); eg.addColorStop(1, '#1565c0');
+      ctx.fillStyle = eg;
+      ctx.beginPath(); ctx.arc(earth.x, earth.y, EARTH_R, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  function loop(){ step(); draw(); requestAnimationFrame(loop); }
+
+  gravityEl.addEventListener('input', () => {
+    gravityOut.textContent = gravityEl.value;
+    if (running && gravityEl.value == 0 && !snapped){
+      snapped = true;
+      statusMain.textContent = '✂️ Gravity OFF';
+      statusSub.textContent = 'Nothing is pulling Earth now. Watch its path…';
+    }
+  });
+  speedEl.addEventListener('input', () => { speedOut.textContent = speedEl.value; });
+
+  document.getElementById('launch').addEventListener('click', launch);
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('snap').addEventListener('click', () => {
+    if (!running){ statusSub.textContent = 'Launch Earth into orbit first, then snap the string!'; return; }
+    gravityEl.value = 0; gravityOut.textContent = '0'; snapped = true;
+    statusMain.textContent = '✂️ Gravity OFF';
+    statusSub.textContent = 'Nothing is pulling Earth now. Watch its path…';
+  });
+  document.getElementById('pause').addEventListener('click', (e) => {
+    if (!running) return;
+    paused = !paused;
+    e.target.textContent = paused ? '▶ Play' : '⏸ Pause';
+  });
+
+  reset();
+  loop();
+
+  // ---- Challenge 2: locked detective's note ----
+  const c2a = document.getElementById('c2a');
+  const c2b = document.getElementById('c2b');
+  const revealBtn = document.getElementById('reveal-note');
+  const detNote = document.getElementById('det-note');
+  function checkUnlock(){
+    const ready = c2a.value.trim().length >= 10 && c2b.value.trim().length >= 10;
+    revealBtn.disabled = !ready;
+    revealBtn.textContent = ready
+      ? '🔓 Reveal the detective\u2019s note'
+      : '🔒 Detective\u2019s note — locked until you\u2019ve written your prediction AND your result';
+  }
+  c2a.addEventListener('input', checkUnlock);
+  c2b.addEventListener('input', checkUnlock);
+  revealBtn.addEventListener('click', () => {
+    detNote.hidden = false;
+    revealBtn.remove();
+  });
+})();
+</script>
+</body>
+</html>
